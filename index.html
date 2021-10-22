@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket Thing1</title>
+</head>
+
+<body>
+    Client1
+    <button onclick="sendMessage()"> Send Message </button>
+    <div id="sine-graph" style="width: 400px; height: 400px;"></div>
+</body>
+<script>
+    const socket = new WebSocket('ws://localhost:3000')
+    var requestInterval
+    socket.onopen = function () {
+        socket.send("message to send")
+
+        requestInterval = window.setInterval(requestData, 50)
+    }
+
+    socket.onmessage = function (evt) {
+        var recieved = evt.data
+        data = JSON.parse(evt.data)
+        var my_plot = {
+            x: data.x,
+            y: data.y,
+            type: 'scatter',
+        }
+        Plotly.newPlot('sine-graph', [my_plot])
+    }
+
+    socket.onclose = function () {
+        window.clearInterval(requestInterval)
+    }
+
+
+
+    function requestData() {
+        socket.send("get-data")
+    }
+
+    socket.addEventListener('open', function (event) {
+        console.log('Connected to Websocket server!')
+    })
+
+    socket.addEventListener('message', function (event) {
+        console.log('Message from server ', event.data)
+    })
+
+    const sendMessage = () => {
+        socket.send('Hello From Client1!')
+    }
+
+
+
+</script>
+
+</html>
