@@ -19,17 +19,22 @@
     const socket = new WebSocket('ws://localhost:3000')
     var requestInterval
     socket.onopen = function () {
-        socket.send("message to send")
+        socket.send("opened socket.")
 
         requestInterval = window.setInterval(requestData, 50)
     }
 
-    socket.onmessage = function (evt) {
-        var recieved = evt.data
-        data = JSON.parse(evt.data)
+    socket.onmessage = function (data) {
+        console.log(data)
+        var datax = new Array(300)
+        var datay = new Array(300)
+        for (var i = 0; i < 300; i++) {
+            datax[i] = data[i, 0]
+            datay[i] = data[i, 1]
+        }
         var my_plot = {
-            x: data.x,
-            y: data.y,
+            x: datax,
+            y: datay,
             type: 'scatter',
         }
         Plotly.newPlot('sine-graph', [my_plot])
@@ -42,15 +47,11 @@
 
 
     function requestData() {
-        socket.send("get-data")
+        socket.send('get-data')
     }
 
     socket.addEventListener('open', function (event) {
         console.log('Connected to Websocket server!')
-    })
-
-    socket.addEventListener('message', function (event) {
-        console.log('Message from server ', event.data)
     })
 
     const sendMessage = () => {
