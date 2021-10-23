@@ -13,7 +13,7 @@
 <body>
     Client1
     <button onclick="sendMessage()"> Send Message </button>
-    <div id="sine-graph" style="width: 400px; height: 400px;"></div>
+    <div id="sine-graph"></div>
 </body>
 <script>
     const socket = new WebSocket('ws://localhost:3000')
@@ -24,21 +24,33 @@
         requestInterval = window.setInterval(requestData, 50)
     }
 
-    socket.onmessage = function (data) {
-        console.log(data)
+    socket.onmessage = function (message) {
+        var parseData = JSON.parse(message.data)
         var datax = new Array(300)
         var datay = new Array(300)
+        console.log(parseData)
         for (var i = 0; i < 300; i++) {
-            datax[i] = data[i, 0]
-            datay[i] = data[i, 1]
+            datax[i] = parseData[0, i]
+            datay[i] = parseData[1, i]
         }
-        var my_plot = {
-            x: datax,
-            y: datay,
-            type: 'scatter',
-        }
-        Plotly.newPlot('sine-graph', [my_plot])
+
+        Plotly.plot('sine-graph', [{ x: datax, y: datay, type: 'line' }])
     }
+
+    var cnt = 0
+
+    setInterval(function () {
+        Plotly.extendTraces('sine-graph', { y: datay }, [0]);
+        cnt++
+
+        if (cnt > 500) {
+            Plotly.relayout('chart', {
+                xaxis: {
+                    range: [cnt - 500, cnt]
+                }
+            });
+        }
+    }, 15);
 
     socket.onclose = function () {
         window.clearInterval(requestInterval)
