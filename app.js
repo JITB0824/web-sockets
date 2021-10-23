@@ -5,7 +5,7 @@ const httpserver = http.createServer((req, res) => {
 
 const WebSocketServer = require('websocket').server
 const wss = new WebSocketServer({
-    "httpserver": httpserver
+    "httpServer": httpserver
 })
 
 wss.on("request", request => {

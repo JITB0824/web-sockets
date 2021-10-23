@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/JITB0824/web-sockets#readme",
   "dependencies": {
+    "websocket": "^1.0.34",
     "websockets": "^0.2.0"
   }
 }
