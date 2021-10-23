@@ -1,16 +1,23 @@
 {
-  "name": "github",
+  "name": "web-sockets",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JITB0824/web-sockets.git"
+  },
+  "keywords": [],
   "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JITB0824/web-sockets/issues"
+  },
+  "homepage": "https://github.com/JITB0824/web-sockets#readme",
   "dependencies": {
-    "express": "^4.17.1",
-    "plotly": "^1.0.6",
-    "ws": "^8.2.3"
+    "websockets": "^0.2.0"
   }
 }
