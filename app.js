@@ -19,29 +19,31 @@ httpserver.listen(3000, () => console.log('listening on port 3000'))
 wss.on("request", request => {
     connection = request.accept()
     console.log("Connection request accepted")
+
+    //Respond to data request with latest chart data
+    connection.on("message", message => {
+        console.log(message.utf8Data)
+        var jsonparse = JSON.parse(message.utf8Data)
+
+        if (jsonparse.title == "chart-update") {
+            connection.send(JSON.stringify(chartData))
+        }
+    })
 })
 
-//Create a connection ws to each client individually
-wss.on("connection", function connection(ws) {
-    console.log("connection created")
-})
+
 
 //CHART MESSAGING
 
 //Create a test JSON array 
 var chartData = {
-    title: "Chart 1",
-    message: "This is chart 1!"
+    title: "chart-data",
+    message: "This is the server"
 }
-
-
-//Set server to disperse chart data every 1000 ms. 
-var chartUpdate = setInterval(updateCharts, 1000)
 
 //Function to update chart data on all clients
 function updateCharts() {
     console.log("Sending chart data update to all clients")
-    wss.clients.forEach(function each(client) {
-        ws.send(JSON.stringify(chartData))
-    })
+    ws.send(JSON.stringify(chartData))
 }
+
