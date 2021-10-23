@@ -15,12 +15,17 @@
             console.log('We recieved a message: ', message)
         }
 
-        json = {
+        chartUpdate = JSON.stringify({
             "title": "chart-update",
             "message": "This is chart 1!"
-        }
+        })
 
-        jsonStringify = JSON.stringify(json)
+        gpioOpen = JSON.stringify({
+            "title": "open-port",
+            "gpioPort": "18"
+        })
+
+
     </script>
 </body>
 

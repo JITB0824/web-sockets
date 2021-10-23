@@ -26,14 +26,20 @@ wss.on("request", request => {
         var jsonparse = JSON.parse(message.utf8Data)
 
         if (jsonparse.title == "chart-update") {
-            connection.send(JSON.stringify(chartData))
+            updateCharts()
+        }
+        if (jsonparse.title == "open-port") {
+            openPort(jsonparse.gpioPort)
+        }
+        if (jsonparse.title == "close-port") {
+            openPort(jsonparse.gpioPort)
         }
     })
 })
 
 
 
-//CHART MESSAGING
+//CHART MESSAGING FUNCTIONS
 
 //Create a test JSON array 
 var chartData = {
@@ -47,3 +53,16 @@ function updateCharts() {
     ws.send(JSON.stringify(chartData))
 }
 
+//Function to open a new GPIO port
+function openPort(gpioPort) {
+    //Add the port to the open ports
+
+    console.log("Opening GPIO port:" + gpioPort)
+}
+
+//Function to close a gpio port
+function closePort(gpioPort) {
+    //Remove the port from open ports
+
+    console.log("Closing GPIO port:" + gpioPort)
+}
