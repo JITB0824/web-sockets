@@ -41,6 +41,9 @@ wss.on("request", request => {
         if (jsonparse.title == "change-recording-status") {
             changeRecordingStatus(jsonparse.gpioPin)
         }
+        if (jsonparse.title == "close-all") {
+            closeAllPins()
+        }
     })
 })
 
@@ -110,6 +113,12 @@ function closePin(gpioPin) {
         console.log("Pin already closed!")
     }
     wasntOpen = true
+}
+
+//Function to close all open pins
+function closeAllPins() {
+    openPinData = new Array()
+    console.log("Clearing all open pins")
 }
 
 function changeRecordingStatus(gpioPin) {

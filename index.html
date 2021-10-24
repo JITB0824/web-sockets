@@ -7,6 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
 <style>
     input.right {
         float: right;
@@ -74,6 +77,14 @@
             document.getElementById('closePinField').value = null
         }
 
+        function gpioCloseAll() {
+            gpioCloseAllJSON = JSON.stringify({
+                "title": "close-all"
+            })
+            console.log("Closing all pins")
+            ws.send(gpioCloseAllJSON)
+        }
+
         function requestUpdateData() {
             if (ws.readyState === WebSocket.OPEN) {
                 console.log("Asking for updated data")
@@ -96,8 +107,9 @@
             document.getElementById("openPins").value = openPins
 
 
-            var pinAlreadyAdded = false
+
             //check if graphs need to be created
+            var pinAlreadyAdded = false
             for (var i = 0; i < openPins.length; i++) {
                 for (var j = 0; j < openPinHTMLAdded.length; j++) {
                     if (openPins[i] == openPinHTMLAdded[j]) {
@@ -137,28 +149,73 @@
             }
 
 
+            //Set color of recording status
+            for (var i = 0; i < openPins.length; i++) {
+                if (openPinStatus[i] == true) {
+                    button = document.getElementById(openPins[i])
+                    button.style.background = "green"
+                    button.innerHTML = ("Recording")
+                } else {
+                    button = document.getElementById(openPins[i])
+                    button.style.background = "red"
+                    button.innerHTML = ("Not recording")
+                }
+            }
+
         }
 
         //Create an array to track what graphs are open
         openPinHTMLAdded = new Array()
 
+
+        //Temp data array
+        var xArray = [50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150];
+        var yArray = [7, 8, 8, 9, 9, 9, 10, 11, 14, 14, 15];
+        var data = [{
+            x: xArray,
+            y: yArray,
+            mode: "markers",
+            type: "scatter"
+        }];
+
+
         //Handle creating charts/buttons per open thread
         function createChart(pin) {
             let button = document.createElement("button")
-            button.innerHTML = "Pin: " + JSON.stringify(pin)
-
-            document.body.appendChild(button)
-            button.onclick = function () { changeRecordingStatus(pin) }
             newID = JSON.stringify(pin)
+
+            button.innerHTML = "Not recording"
+            button.onclick = function () { changeRecordingStatus(pin) }
+
+            var layout = {
+                xaxis: { range: [40, 160], title: "x axis" },
+                xaxis: { range: [5, 16], title: "x axis" },
+                title: "GRAPHS!!"
+            }
+            let plot = document.createElement("chart")
+            plotid = "Plot" + newID
+
+            let label = document.createElement("H3")
+            var text = document.createTextNode("Pin: " + newID)
+            label.appendChild(text)
+
+            document.body.appendChild(label)
+            document.body.appendChild(plot)
+            document.body.appendChild(button)
+            label.id = "Label" + newID
             button.id = newID
-
-
+            plot.id = "Plot" + newID
+            Plotly.newPlot(plotid, data, layout)
         }
 
-        //Handle removing charts/buttons per  
+        //Handle removing charts/buttons per
         function removeChart(pin) {
             var button = document.getElementById(JSON.stringify(pin))
             button.remove()
+            var plot = document.getElementById("Plot" + JSON.stringify(pin))
+            plot.remove()
+            var label = document.getElementById("Label" + JSON.stringify(pin))
+            label.remove()
         }
 
         function changeRecordingStatus(pin) {
@@ -181,15 +238,18 @@
     <h3>Manage Pins</h3>
     <form>
         <label for="openPinField">Open new pin:</label><br>
-        <input type="text" id="openPinField" name="openPinField"><br>
+        <input type="text" id="openPinField" name="openPinField">
         <input type="button" value="Submit" onclick="gpioOpen()"><br><br>
     </form>
 
     <form>
         <label for="closePinField">Close open pin:</label><br>
-        <input type="text" id="closePinField" name="closePinField"><br>
-        <input type="button" value="Submit" onclick="gpioClose()"><br>
+        <input type="text" id="closePinField" name="closePinField">
+        <input type="button" value="Submit" onclick="gpioClose()"><br><br>
+        <input type="button" value="Close all pins" onclick="gpioCloseAll()" style="background-color: orange">
     </form><br><br>
+
+    <h2>Incoming GPIO Data</h2>
 
 
 </body>
