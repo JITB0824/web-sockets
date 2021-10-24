@@ -13,20 +13,85 @@
         const ws = new WebSocket("ws://localhost:3000")
         ws.onmessage = message => {
             console.log('We recieved a message: ', message)
+
+            var jsonparse = JSON.parse(message.data)
+
+            if (jsonparse.title == "chart-data") {
+                updateData(jsonparse.openPortData)
+            }
         }
 
-        chartUpdate = JSON.stringify({
+        chartUpdateJSON = JSON.stringify({
             "title": "chart-update",
             "message": "This is chart 1!"
         })
 
-        gpioOpen = JSON.stringify({
-            "title": "open-port",
-            "gpioPort": "18"
-        })
+        function gpioOpen() {
+            gpioOpenJSON = JSON.stringify({
+                "title": "open-port",
+                "gpioPort": document.getElementById('openPortField').value
+            })
+            console.log("sending open port: " + JSON.parse(gpioOpenJSON).gpioPort)
+            ws.send(gpioOpenJSON)
+        }
+
+        function gpioClose() {
+            gpioCloseJSON = JSON.stringify({
+                "title": "close-port",
+                "gpioPort": document.getElementById('closePortField').value
+            })
+            console.log("sending closed port: " + JSON.parse(gpioCloseJSON).gpioPort)
+            ws.send(gpioCloseJSON)
+        }
+
+        function requestUpdateData() {
+            if (ws.readyState === WebSocket.OPEN) {
+                console.log("Asking for updated data")
+                ws.send(JSON.stringify({
+                    "title": "update-data"
+                }))
+            }
+        }
+
+        //Initialize the open ports and their status
+        openPorts = new Array()
+        openPortStatus = new Array()
+
+        function updateData(openPortData) {
+            for (var i = 0; i < openPortData.length; i++) {
+                openPorts = openPortData[i, 0]
+                openPortStatus = openPortData[i, 1]
+            }
+            console.log(openPortData[0, 0])
+            console.log(openPorts)
+            console.log(openPortStatus)
+            document.getElementById("openPorts").value = openPorts
+            //create some graphs in html
+        }
+
+        setInterval(requestUpdateData, 500)
 
 
     </script>
+
+    <h2>GPIO Port Management</h2>
+
+    <h3>Open Ports</h3>
+    <input type="text" id="openPorts" value="{list open ports here}"><br><br>
+    <h3>Manage Ports</h3>
+    <form>
+        <label for="openPortField">Open new port:</label><br>
+        <input type="text" id="openPortField" name="openPortField"><br>
+        <input type="button" value="Submit" onclick="gpioOpen()"><br><br>
+    </form>
+
+    <form>
+        <label for="closePortField">Close open port:</label><br>
+        <input type="text" id="closePortField" name="closePortField"><br>
+        <input type="button" value="Submit" onclick="gpioClose()"><br>
+    </form>
+
+
 </body>
 
 </html>
