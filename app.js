@@ -22,6 +22,7 @@ var connection = new Array()
 wss.on("request", request => {
     connection = request.accept()
     console.log("Connection request accepted")
+    connection.send(JSON.stringify({ "title": "Connected" }))
 
     //Respond to data request with latest chart data
     connection.on("message", message => {
@@ -31,11 +32,11 @@ wss.on("request", request => {
         if (jsonparse.title == "update-data") {
             updateData()
         }
-        if (jsonparse.title == "open-port") {
-            openPort(jsonparse.gpioPort)
+        if (jsonparse.title == "open-pin") {
+            openPin(jsonparse.gpioPin)
         }
-        if (jsonparse.title == "close-port") {
-            closePort(jsonparse.gpioPort)
+        if (jsonparse.title == "close-pin") {
+            closePin(jsonparse.gpioPin)
         }
     })
 })
@@ -44,9 +45,9 @@ wss.on("request", request => {
 
 //CHART MESSAGING FUNCTIONS
 
-//Create open port array to track open ports and their recording status
-var openPorts = new Array()
-var openPortData = new Array()
+//Create open port array to track open pins and their recording status
+var openPins = new Array()
+var openPinData = new Array()
 
 
 //Create a test JSON array 
@@ -61,36 +62,49 @@ function updateData() {
 
     chartData = {
         title: "chart-data",
-        openPortData: openPortData,
+        openPinData: openPinData,
         data: "data here"
     }
 
     connection.send(JSON.stringify(chartData))
 }
 
-//Function to open a new GPIO port
-function openPort(gpioPort) {
-    //Add the port to the open ports
-    if (openPortData.includes(gpioPort) == false) {
-        console.log(gpioPort)
-        openPortData.push([JSON.parse(gpioPort), false])
-
-        console.log("Opening GPIO port:" + gpioPort)
-        console.log(openPortData)
-    } else {
-        console.log("Port already open!")
+//Function to open a new GPIO pin
+function openPin(gpioPin) {
+    //Add the pin to the open pins
+    var alreadyOpen = false
+    for (var i = 0; i < openPinData.length; i++) {
+        if (openPinData[i][0] == gpioPin) {
+            alreadyOpen = true
+        }
     }
+    if (alreadyOpen) {
+        console.log("Pin already open!")
+    } else {
+        openPinData.push([JSON.parse(gpioPin), false])
+        console.log("Opening GPIO pin:" + gpioPin)
+    }
+    alreadyOpen = false
 }
 
-//Function to close a gpio port
-function closePort(gpioPort) {
-    //Remove the port from open ports
-    console.log(openPortData)
-    console.log(gpioPort)
-    if (openPortData.includes(gpioPort) == true) {
-        openPortData.splice(openPortData.indexOf(gpioPort), 2)
-        console.log("Closing GPIO port:" + gpioPort)
-    } else {
-        console.log("Port already closed!")
+//Function to close a gpio pin
+function closePin(gpioPin) {
+    //Remove the port from open pins
+    console.log(openPinData)
+    console.log(gpioPin)
+    console.log(openPinData.length)
+
+    var wasntOpen = true
+
+    for (var i = 0; i < openPinData.length; i++) {
+        if (openPinData[i][0] == gpioPin) {
+            openPinData.splice(i, 1)
+            console.log("Closing GPIO pin:" + gpioPin)
+            wasntOpen = false
+        }
     }
+    if (wasntOpen) {
+        console.log("Pin already closed!")
+    }
+    wasntOpen = true
 }

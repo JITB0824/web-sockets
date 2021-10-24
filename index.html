@@ -7,6 +7,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+<style>
+    input.right {
+        float: right;
+    }
+</style>
 
 <body>
     <script>
@@ -15,11 +20,31 @@
             console.log('We recieved a message: ', message)
 
             var jsonparse = JSON.parse(message.data)
-
             if (jsonparse.title == "chart-data") {
-                updateData(jsonparse.openPortData)
+                updateData(jsonparse.openPinData)
+            }
+            if (jsonparse.title == "Connected") {
+                connected()
             }
         }
+
+        ws.onclose = function () {
+            console.log("disconnected and changing button")
+            var button = document.getElementById("site-status")
+            button.style = "background-color: red"
+            button.value = "Disconnected"
+        }
+
+
+        //Update the HTML so the status shows green
+        function connected() {
+            console.log("connected and changing button")
+            var button = document.getElementById("site-status")
+            button.style = "background-color: green"
+            button.value = "Connected"
+        }
+
+
 
         chartUpdateJSON = JSON.stringify({
             "title": "chart-update",
@@ -28,20 +53,22 @@
 
         function gpioOpen() {
             gpioOpenJSON = JSON.stringify({
-                "title": "open-port",
-                "gpioPort": document.getElementById('openPortField').value
+                "title": "open-pin",
+                "gpioPin": JSON.parse(document.getElementById('openPinField').value)
             })
-            console.log("sending open port: " + JSON.parse(gpioOpenJSON).gpioPort)
+            console.log("sending open pin: " + JSON.parse(gpioOpenJSON).gpioPin)
             ws.send(gpioOpenJSON)
+            document.getElementById('openPinField').value = null
         }
 
         function gpioClose() {
             gpioCloseJSON = JSON.stringify({
-                "title": "close-port",
-                "gpioPort": document.getElementById('closePortField').value
+                "title": "close-pin",
+                "gpioPin": JSON.parse(document.getElementById('closePinField').value)
             })
-            console.log("sending closed port: " + JSON.parse(gpioCloseJSON).gpioPort)
+            console.log("sending closed pin: " + JSON.parse(gpioCloseJSON).gpioPin)
             ws.send(gpioCloseJSON)
+            document.getElementById('closePinField').value = null
         }
 
         function requestUpdateData() {
@@ -53,41 +80,98 @@
             }
         }
 
-        //Initialize the open ports and their status
-        openPorts = new Array()
-        openPortStatus = new Array()
+        setInterval(requestUpdateData, 500)
+        function updateData(openPinData) {
 
-        function updateData(openPortData) {
-            for (var i = 0; i < openPortData.length; i++) {
-                openPorts = openPortData[i, 0]
-                openPortStatus = openPortData[i, 1]
+            openPins = new Array()
+            openPinStatus = new Array()
+
+            for (var i = 0; i < openPinData.length; i++) {
+                openPins.push(openPinData[i][0])
+                openPinStatus.push(openPinData[i][1])
             }
-            console.log(openPortData[0, 0])
-            console.log(openPorts)
-            console.log(openPortStatus)
-            document.getElementById("openPorts").value = openPorts
-            //create some graphs in html
+            document.getElementById("openPins").value = openPins
+
+
+            var pinAlreadyAdded = false
+            //check if graphs need to be created
+            for (var i = 0; i < openPins.length; i++) {
+                for (var j = 0; j < openPinHTMLAdded.length; j++) {
+                    if (openPins[i] == openPinHTMLAdded[j]) {
+                        pinAlreadyAdded = true
+                    }
+                }
+                if (pinAlreadyAdded) {
+
+                } else {
+                    console.log("creating chart for pin: " + openPins[i])
+                    createChart(openPins[i])
+                    openPinHTMLAdded.push(openPins[i])
+                }
+
+                pinAlreadyAdded = false
+            }
+
+
+
+            //Check if graphs need to be removed
+            var pinStillHere = false
+            for (var i = 0; i < openPinHTMLAdded.length; i++) {
+                for (var j = 0; j < openPins.length; j++) {
+                    if (openPins[j] == openPinHTMLAdded[i]) {
+                        pinStillHere = true
+                    }
+                }
+                if (pinStillHere) {
+
+                } else {
+                    console.log("removing chart for pin: " + openPinHTMLAdded[i])
+                    removeChart(openPinHTMLAdded[i])
+                    openPinHTMLAdded.splice(i, 1)
+                }
+
+                pinStillHere = false
+            }
+
+
         }
 
-        setInterval(requestUpdateData, 500)
+        //Create an array to track what graphs are open
+        openPinHTMLAdded = new Array()
+
+        //Handle creating charts/buttons per open thread
+        function createChart(pin) {
+            let button = document.createElement("button")
+            button.innerHTML = JSON.stringify(pin)
+            document.body.appendChild(button)
+            button.id = JSON.stringify(pin)
+
+        }
+
+        //Handle removing charts/buttons per  
+        function removeChart(pin) {
+            var button = document.getElementById(JSON.stringify(pin))
+            button.remove()
+        }
 
 
     </script>
 
-    <h2>GPIO Port Management</h2>
+    <h2>GPIO Pin Management</h2>
+    <input type="button" id="site-status" value="Connecting..." class="right" style="background-color: orange">
+    <h3>Open Pins</h3>
+    <input type="text" id="openPins"><br><br>
 
-    <h3>Open Ports</h3>
-    <input type="text" id="openPorts" value="{list open ports here}"><br><br>
-    <h3>Manage Ports</h3>
+    <h3>Manage Pins</h3>
     <form>
-        <label for="openPortField">Open new port:</label><br>
-        <input type="text" id="openPortField" name="openPortField"><br>
+        <label for="openPinField">Open new pin:</label><br>
+        <input type="text" id="openPinField" name="openPinField"><br>
         <input type="button" value="Submit" onclick="gpioOpen()"><br><br>
     </form>
 
     <form>
-        <label for="closePortField">Close open port:</label><br>
-        <input type="text" id="closePortField" name="closePortField"><br>
+        <label for="closePinField">Close open pin:</label><br>
+        <input type="text" id="closePinField" name="closePinField"><br>
         <input type="button" value="Submit" onclick="gpioClose()"><br>
     </form>
 
