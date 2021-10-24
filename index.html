@@ -10,6 +10,9 @@
 <style>
     input.right {
         float: right;
+        background-color: orange;
+        padding: 15px 15px;
+        font-size: 20px;
     }
 </style>
 
@@ -142,9 +145,13 @@
         //Handle creating charts/buttons per open thread
         function createChart(pin) {
             let button = document.createElement("button")
-            button.innerHTML = JSON.stringify(pin)
+            button.innerHTML = "Pin: " + JSON.stringify(pin)
+
             document.body.appendChild(button)
-            button.id = JSON.stringify(pin)
+            button.onclick = function () { changeRecordingStatus(pin) }
+            newID = JSON.stringify(pin)
+            button.id = newID
+
 
         }
 
@@ -154,11 +161,20 @@
             button.remove()
         }
 
+        function changeRecordingStatus(pin) {
+            console.log("Changing recording status of pin: " + pin)
+            var changeRecordingStatus = JSON.stringify({
+                "title": "change-recording-status",
+                "gpioPin": pin
+            })
+            ws.send(changeRecordingStatus)
+        }
+
 
     </script>
 
     <h2>GPIO Pin Management</h2>
-    <input type="button" id="site-status" value="Connecting..." class="right" style="background-color: orange">
+    <input type="button" id="site-status" value="Connecting..." class="right">
     <h3>Open Pins</h3>
     <input type="text" id="openPins"><br><br>
 
@@ -173,7 +189,7 @@
         <label for="closePinField">Close open pin:</label><br>
         <input type="text" id="closePinField" name="closePinField"><br>
         <input type="button" value="Submit" onclick="gpioClose()"><br>
-    </form>
+    </form><br><br>
 
 
 </body>

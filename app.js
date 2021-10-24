@@ -38,6 +38,9 @@ wss.on("request", request => {
         if (jsonparse.title == "close-pin") {
             closePin(jsonparse.gpioPin)
         }
+        if (jsonparse.title == "change-recording-status") {
+            changeRecordingStatus(jsonparse.gpioPin)
+        }
     })
 })
 
@@ -107,4 +110,18 @@ function closePin(gpioPin) {
         console.log("Pin already closed!")
     }
     wasntOpen = true
+}
+
+function changeRecordingStatus(gpioPin) {
+    console.log("Changing recording status")
+    for (var i = 0; i < openPinData.length; i++) {
+        if (openPinData[i][0] == gpioPin) {
+            if (openPinData[i][1] == false) {
+                openPinData[i][1] = true
+            } else {
+                openPinData[i][1] = false
+            }
+        }
+    }
+
 }
