@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Web Socket Server</title>
 </head>
 
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
@@ -17,11 +17,23 @@
         padding: 15px 15px;
         font-size: 20px;
     }
+
+    input.right2 {
+        float: right;
+        background-color: green;
+        padding: 10px 10px;
+        font-size: 15px;
+    }
 </style>
 
 <body>
     <script>
-        const ws = new WebSocket("ws://localhost:3000")
+        var ws = new WebSocket("ws://localhost:3000")
+        function openws() {
+            var ws = new WebSocket("ws://localhost:3000")
+        }
+
+
         ws.onmessage = message => {
             console.log('We recieved a message: ', message)
 
@@ -39,6 +51,10 @@
             var button = document.getElementById("site-status")
             button.style = "background-color: red"
             button.value = "Disconnected"
+            button = document.getElementById("reconnect-button")
+            button.style = "background-color: green"
+            button.value = "Reconnect"
+            button.onclick = function () { openws() }
         }
 
 
@@ -48,6 +64,10 @@
             var button = document.getElementById("site-status")
             button.style = "background-color: green"
             button.value = "Connected"
+            button = document.getElementById("reconnect-button")
+            button.style = "background-color: red"
+            button.value = "Disconnect"
+            button.onclick = function () { closeWebSocket() }
         }
 
 
@@ -94,6 +114,28 @@
             }
         }
 
+        function gpioOpenConnectedPins() {
+            gpioOpenConnectedJSON = JSON.stringify({
+                "title": "open-connected-pins",
+            })
+            console.log("Requesting open connected pins")
+            ws.send(gpioOpenConnectedJSON)
+        }
+
+        function closeWebSocket() {
+            console.log("Closing websocket")
+            ws.close()
+        }
+
+
+
+
+
+
+
+        //UPDATE PAGE
+        //
+        //
         setInterval(requestUpdateData, 500)
         function updateData(openPinData) {
 
@@ -164,6 +206,12 @@
 
         }
 
+
+
+
+        //CHARTS
+        //
+        //
         //Create an array to track what graphs are open
         openPinHTMLAdded = new Array()
 
@@ -231,7 +279,8 @@
     </script>
 
     <h2>GPIO Pin Management</h2>
-    <input type="button" id="site-status" value="Connecting..." class="right">
+    <input type="button" id="site-status" value="Connecting..." class="right"><br><br><br><br>
+    <input type="button" id="reconnect-button" value="Reconnect" class="right2">
     <h3>Open Pins</h3>
     <input type="text" id="openPins"><br><br>
 
@@ -240,6 +289,8 @@
         <label for="openPinField">Open new pin:</label><br>
         <input type="text" id="openPinField" name="openPinField">
         <input type="button" value="Submit" onclick="gpioOpen()"><br><br>
+        <input type="button" value="Open connected pins" onclick="gpioOpenConnectedPins()"
+            style="background-color: green"><br><br><br>
     </form>
 
     <form>

@@ -20,17 +20,22 @@ var connection = new Array()
 
 //Accept all connection requests
 wss.on("request", request => {
-    connection = request.accept()
+    var client = request.accept()
+    connection.push(client)
     console.log("Connection request accepted")
-    connection.send(JSON.stringify({ "title": "Connected" }))
+    connection[connection.indexOf(client)].send(JSON.stringify({ "title": "Connected" }))
+    console.log("adding new client, now have this many clients: " + connection.length)
 
     //Respond to data request with latest chart data
-    connection.on("message", message => {
-        console.log(message.utf8Data)
+    connection[connection.indexOf(client)].on("message", message => {
         var jsonparse = JSON.parse(message.utf8Data)
 
+        //Uncomment log if needed for degubbing
+        //console.log(message.utf8Data)
+
         if (jsonparse.title == "update-data") {
-            updateData()
+            console.log("recieved request for updated data")
+            updateData(connection[connection.indexOf(client)])
         }
         if (jsonparse.title == "open-pin") {
             openPin(jsonparse.gpioPin)
@@ -44,6 +49,13 @@ wss.on("request", request => {
         if (jsonparse.title == "close-all") {
             closeAllPins()
         }
+        if (jsonparse.title == "open-connected-pins") {
+            openConnectedPins()
+        }
+    })
+    connection[connection.indexOf(client)].on("close", function () {
+        connection.splice(connection.indexOf(client), 1)
+        console.log("removing lost client, now have this many clients: " + connection.length)
     })
 })
 
@@ -63,8 +75,7 @@ var chartData = {
 }
 
 //Function to update chart data on all clients
-function updateData() {
-    console.log("Sending chart data update to all clients")
+function updateData(connection) {
 
     chartData = {
         title: "chart-data",
@@ -133,4 +144,9 @@ function changeRecordingStatus(gpioPin) {
         }
     }
 
+}
+
+function openConnectedPins() {
+    console.log("Opening connected pins")
+    //Write script that checks every gpio pin for valid data, and if found, runs add pin for that pin to make sure it is open
 }
