@@ -51,6 +51,12 @@ wss.on("request", request => {
         if (jsonparse.title == "open-connected-pins") {
             openConnectedPins()
         }
+        if (jsonparse.title == "download-passive") {
+            downloadPassive(jsonparse.gpioPin)
+        }
+        if (jsonparse.title == "download-recordings") {
+            downloadRecordings(jsonparse.gpioPin)
+        }
     })
     connection[connection.indexOf(client)].on("close", function () {
         connection.splice(connection.indexOf(client), 1)
@@ -185,31 +191,22 @@ function getSensorData() {
         //Here we check if recording, if we are we throw data point into recording file. 
         if (openPinData[i][1] == true) {
             if (firstRecordingLoop[i]) {
-                console.log(openPinData[i][0])
-                console.log(recordingCounter)
                 if (recordingCounter[i][0] == []) {
                     console.log("Creating recording Counter push!")
                     recordingCounter[i][0] = [openPinData[i][0], 1]
-                    console.log(recordingCounter)
-                    console.log(recordingCounter.indexOf(openPinData[i][0]))
                 } else {
                     recordingCounter[i][1]++
                 }
                 //Here is the code that initializes the write streams
-                console.log(openPinData[i][0])
-                console.log("this still is " + recordingCounter[i][1])
-                var writeStreamName = "PIN" + JSON.stringify(openPinData[i][0]) + ", RECORDING" + recordingCounter[i][1]
+                var writeStreamName = "PIN" + JSON.stringify(openPinData[i][0]) + "RECORDING" + recordingCounter[i][1]
                 var fs = require('fs')
                 var writeStream = fs.createWriteStream(writeStreamName, {
                     flags: 'a'
                 })
                 fsWriteStreams[i] = [writeStreamName, writeStream]
-                console.log(fsWriteStreams)
                 writeStream.write(JSON.stringify(pinTimeData) + "\n")
 
                 firstRecordingLoop[i] = false
-                console.log(writeStreamName)
-                console.log(fsWriteStreams)
             } else {
                 var writeStream = fsWriteStreams[i][1]
                 writeStream.write(JSON.stringify(pinTimeData) + "\n")
@@ -225,6 +222,27 @@ function getSensorData() {
 //
 //
 
-//Initialize arrays to store the locations of each data stream created. 
-var recordings = new Array()
-var passiveRecordings = new Array()
+function downloadPassive(pin) {
+    console.log("Sending out passive data")
+}
+
+function downloadRecordings(pin) {
+    console.log("Sending out recordings")
+    var fs = require('fs')
+    openPins = new Array()
+    for (var i = 0; i < openPinData.length; i++) {
+        openPins.push(openPinData[i][0])
+    }
+    pinIndex = openPins.indexOf(pin)
+    recordingData = new Array()
+    filename = JSON.stringify("PIN" + JSON.stringify(openPinData[pinIndex][0]) + "RECORDING" + recordingCounter[pinIndex][1] + ".txt")
+    fileData = new Array()
+    for (var i = 0; i < recordingCounter[pinIndex][1]; i++) {
+        fs.readFile(filename, function (err, data) {
+            console.log(data)
+            fileData.push(data)
+        })
+    }
+    console.log(filename)
+    console.log(fileData)
+}

@@ -214,10 +214,10 @@
 
             //Update each plot's x-axis range and y axis range
             for (var i = 0; i < yArray.length; i++ && yArray.length > 2) {
-                if (yArray[i].length > 10000) {
+                if (yArray[i].length > 3000) {
                     Plotly.relayout("Plot" + openPins[i], {
                         xaxis: {
-                            range: [yArray[i].length - 500, yArray[i].length]
+                            range: [yArray[i].length - 3000, yArray[i].length]
                         }
                     })
                 }
@@ -244,7 +244,7 @@
             console.log(" pinID is: " + pinID)
             buttonRecording.innerHTML = "Not recording"
             buttonRecording.onclick = function () { changeRecordingStatus(pin) }
-
+            buttonRecording.id = pinID
 
             // The magic incantations of plotly
             var layout = {
@@ -252,7 +252,6 @@
                 yaxis: { title: "Measured Values" },
                 title: "Plotting Pin " + pinID
             }
-
             let plot = document.createElement("div")
             plot.id = "Plot" + pinID
             yArray.push([[], []])
@@ -262,14 +261,27 @@
                 type: "scatter"
             }]
 
+
+            //Create download buttons
+            let downloadPassiveButton = document.createElement("button")
+            downloadPassiveButton.innerHTML = "Download entire graph"
+            downloadPassiveButton.onclick = function () { downloadPassive(pin) }
+            downloadPassiveButton.id = "download-passive" + pinID
+
+            let downloadRecordingsButton = document.createElement("button")
+            downloadRecordingsButton.innerHTML = "Download all recordings"
+            downloadRecordingsButton.onclick = function () { downloadRecordings(pin) }
+            downloadRecordingsButton.id = "download-recordings" + pinID
+
+
+            //Append everything after this point
+
             document.body.appendChild(plot)
             document.body.appendChild(buttonRecording)
+            document.body.appendChild(downloadPassiveButton)
+            document.body.appendChild(downloadRecordingsButton)
 
             Plotly.plot("Plot" + pinID, [{ y: new Array(), type: 'line' }], layout)
-
-
-            buttonRecording.id = pinID
-
 
         }
 
@@ -308,6 +320,24 @@
                 addittionalData.push(pinGraphData[i])
             }
             return addittionalData
+        }
+
+        function downloadPassive(pin) {
+            console.log("Downloading entire graph to client")
+            var message = JSON.stringify({
+                "title": "download-passive",
+                "gpioPin": pin
+            })
+            ws.send(message)
+        }
+
+        function downloadRecordings(pin) {
+            console.log("Downloading all recordings to client")
+            var message = JSON.stringify({
+                "title": "download-recordings",
+                "gpioPin": pin
+            })
+            ws.send(message)
         }
 
 
