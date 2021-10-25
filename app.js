@@ -166,12 +166,17 @@ function openConnectedPins() {
     //Write script that checks every gpio pin for valid data, and if found, runs add pin for that pin to make sure it is open
 }
 
-setInterval(getSensorData, 50)
+var start = Date.now()
 
+setInterval(getSensorData, 10)
 function getSensorData() {
     for (var i = 0; i < openPinData.length; i++) {
         //Set a consistent random variable
+        var deltaTime = Date.now() - start
         var randomVariable = Math.random() * 10
+        var pinTimeData = [deltaTime, randomVariable]
+        start = Date.now()
+
         //Here we push a random variable, in future will use gpio pin data here. 
         openPinData[i][2].push(randomVariable)
 
@@ -200,14 +205,14 @@ function getSensorData() {
                 })
                 fsWriteStreams[i] = [writeStreamName, writeStream]
                 console.log(fsWriteStreams)
-                writeStream.write(JSON.stringify(randomVariable) + "\n")
+                writeStream.write(JSON.stringify(pinTimeData) + "\n")
 
                 firstRecordingLoop[i] = false
                 console.log(writeStreamName)
                 console.log(fsWriteStreams)
             } else {
                 var writeStream = fsWriteStreams[i][1]
-                writeStream.write(JSON.stringify(randomVariable) + "\n")
+                writeStream.write(JSON.stringify(pinTimeData) + "\n")
             }
 
         }

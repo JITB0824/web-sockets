@@ -132,7 +132,7 @@
 
         var openPinGraphData = new Array()
 
-        setInterval(requestUpdateData, 50)
+        setInterval(requestUpdateData, 10)
         function updateData(openPinData) {
             openPins = new Array()
             openPinStatus = new Array()
@@ -214,7 +214,7 @@
 
             //Update each plot's x-axis range and y axis range
             for (var i = 0; i < yArray.length; i++ && yArray.length > 2) {
-                if (yArray[i].length > 500) {
+                if (yArray[i].length > 10000) {
                     Plotly.relayout("Plot" + openPins[i], {
                         xaxis: {
                             range: [yArray[i].length - 500, yArray[i].length]
@@ -279,6 +279,9 @@
             buttonRecording.remove()
             var plot = document.getElementById("Plot" + JSON.stringify(pin))
             plot.remove()
+            if (openPinData[i][1] == true) {
+                changeRecordingStatus(pin)
+            }
 
         }
 
