@@ -66,6 +66,15 @@ wss.on("request", request => {
 var openPins = new Array()
 var openPinData = new Array()
 
+//Create variable to track how many recordings are created for each pin
+var recordingCounter = new Array()
+
+//Initialize first recording loop boolean to know when you should start a new recording file
+var firstRecordingLoop = false
+
+//Create fs array to keep track of open write streams
+var fsWriteStreams = new Array()
+
 
 //Create a test JSON array 
 var chartData = {
@@ -102,6 +111,7 @@ function openPin(gpioPin) {
         console.log(openPinData)
     }
     alreadyOpen = false
+
 }
 
 //Function to close a gpio pin
@@ -135,12 +145,15 @@ function changeRecordingStatus(gpioPin) {
         if (openPinData[i][0] == gpioPin) {
             if (openPinData[i][1] == false) {
                 openPinData[i][1] = true
+                firstRecordingLoop = true
+
+
             } else {
                 openPinData[i][1] = false
+                //NEED TO AD CODE HERE TO KILL OLD writestreams
             }
         }
     }
-
 }
 
 function openConnectedPins() {
@@ -152,8 +165,52 @@ setInterval(getSensorData, 50)
 
 function getSensorData() {
     for (var i = 0; i < openPinData.length; i++) {
+        //Set a consistent random variable
+        var randomVariable = Math.random() * 10
         //Here we push a random variable, in future will use gpio pin data here. 
-        openPinData[i][2].push(Math.random())
+        openPinData[i][2].push(randomVariable)
+
+        //Here we need to take the sensor data point and throw it into passive recording
+
+        //Here we check if recording, if we are we throw data point into recording file. 
+        if (openPinData[i][1] == true) {
+            if (firstRecordingLoop) {
+                console.log(recordingCounter.indexOf(openPinData[i][0]))
+                if (recordingCounter.indexOf(openPinData[i][0]) == -1) {
+                    recordingCounter.push(openPinData[i][0], 0)
+                } else {
+                    recordingCounter[i][1]++
+                }
+                //Here is the code that initializes the write streams
+                console.log(openPinData[i][0])
+                console.log("this still is " + recordingCounter[i][1])
+                var writeStreamName = JSON.stringify(openPinData[i][0]) + recordingCounter[i][1]
+                var fs = require('fs')
+                var writeStream = fs.createWriteStream(writeStreamName, {
+                    flags: 'a'
+                })
+                fsWriteStreams.push([writeStreamName, writeStream])
+                writeStream.write(JSON.stringify(randomVariable))
+
+                firstRecordingLoop = false
+                console.log(writeStreamName)
+                console.log(fsWriteStreams)
+            } else {
+                console.log(fsWriteStreams)
+                var writeStream = fsWriteStreams[fsWriteStreams.indexOf(writeStreamName)][1]
+                writeStream.write(JSON.stringify(randomVariable))
+            }
+
+        }
+
     }
 
 }
+
+//RECORDINGS
+//
+//
+
+//Initialize arrays to store the locations of each data stream created. 
+var recordings = new Array()
+var passiveRecordings = new Array()
