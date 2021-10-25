@@ -35,7 +35,6 @@
 
 
         ws.onmessage = message => {
-            console.log('We recieved a message: ', message)
 
             var jsonparse = JSON.parse(message.data)
             if (jsonparse.title == "chart-data") {
@@ -107,7 +106,6 @@
 
         function requestUpdateData() {
             if (ws.readyState === WebSocket.OPEN) {
-                console.log("Asking for updated data")
                 ws.send(JSON.stringify({
                     "title": "update-data"
                 }))
@@ -136,16 +134,26 @@
         //UPDATE PAGE
         //
         //
+
+        //Reset data array
+        var xArray = new Array()
+        var yArray = [[], []]
+        console.log(yArray)
+
+        var openPinGraphData = new Array()
+
         setInterval(requestUpdateData, 500)
         function updateData(openPinData) {
-
             openPins = new Array()
             openPinStatus = new Array()
-
+            openPinGraphData = new Array()
             for (var i = 0; i < openPinData.length; i++) {
                 openPins.push(openPinData[i][0])
                 openPinStatus.push(openPinData[i][1])
+                openPinGraphData.push(openPinData[i][2])
             }
+
+
             document.getElementById("openPins").value = openPins
 
 
@@ -184,6 +192,7 @@
                 } else {
                     console.log("removing chart for pin: " + openPinHTMLAdded[i])
                     removeChart(openPinHTMLAdded[i])
+                    yArray.splice(i, 1)
                     openPinHTMLAdded.splice(i, 1)
                 }
 
@@ -204,6 +213,27 @@
                 }
             }
 
+            //Update the respective plot's data to the latest openPinData
+            for (var i = 0; i < openPinGraphData.length; i++) {
+                latestMissingPoints = getLatestChartData(i)
+                console.log("missing points for " + openPins[i])
+                console.log("latest missing points " + latestMissingPoints)
+                Plotly.extendTraces("Plot" + openPins[i], { y: [latestMissingPoints] }, [0])
+                for (var j = 0; j < latestMissingPoints.length; j++) {
+                    yArray[i].push(latestMissingPoints[j])
+                }
+            }
+
+            //Update each plot's x-axis range and y axis range
+            for (var i = 0; i < yArray.length; i++ && yArray.length > 2) {
+                if (yArray[i].length > 500) {
+                    Plotly.relayout("Plot" + openPins[i], {
+                        xaxis: {
+                            range: [yArray[i].length - 500, yArray[i].length]
+                        }
+                    })
+                }
+            }
         }
 
 
@@ -216,44 +246,40 @@
         openPinHTMLAdded = new Array()
 
 
-        //Temp data array
-        var xArray = [50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150];
-        var yArray = [7, 8, 8, 9, 9, 9, 10, 11, 14, 14, 15];
-        var data = [{
-            x: xArray,
-            y: yArray,
-            mode: "markers",
-            type: "scatter"
-        }];
+
 
 
         //Handle creating charts/buttons per open thread
         function createChart(pin) {
             let button = document.createElement("button")
-            newID = JSON.stringify(pin)
-
+            pinID = JSON.stringify(pin)
+            console.log(" pinID is: " + pinID)
             button.innerHTML = "Not recording"
             button.onclick = function () { changeRecordingStatus(pin) }
 
             var layout = {
-                xaxis: { range: [40, 160], title: "x axis" },
-                xaxis: { range: [5, 16], title: "x axis" },
-                title: "GRAPHS!!"
+                xaxis: { title: "x axis" },
+                yaxis: { title: "y axis" },
+                title: "Plot Pin " + pinID
             }
-            let plot = document.createElement("chart")
-            plotid = "Plot" + newID
+            let plot = document.createElement("div")
+            plot.id = "Plot" + pinID
 
-            let label = document.createElement("H3")
-            var text = document.createTextNode("Pin: " + newID)
-            label.appendChild(text)
+            yArray.push([[], []])
 
-            document.body.appendChild(label)
+            var data = [{
+                x: xArray,
+                y: yArray,
+                type: "scatter"
+            }]
+
             document.body.appendChild(plot)
             document.body.appendChild(button)
-            label.id = "Label" + newID
-            button.id = newID
-            plot.id = "Plot" + newID
-            Plotly.newPlot(plotid, data, layout)
+
+            Plotly.plot("Plot" + pinID, [{ y: new Array(), type: 'line' }], layout)
+
+
+            button.id = pinID
         }
 
         //Handle removing charts/buttons per
@@ -262,8 +288,7 @@
             button.remove()
             var plot = document.getElementById("Plot" + JSON.stringify(pin))
             plot.remove()
-            var label = document.getElementById("Label" + JSON.stringify(pin))
-            label.remove()
+
         }
 
         function changeRecordingStatus(pin) {
@@ -273,6 +298,22 @@
                 "gpioPin": pin
             })
             ws.send(changeRecordingStatus)
+        }
+
+        //Create function that sends back what points need to be added
+        function getLatestChartData(pinIndex) {
+            var addittionalData = new Array()
+            var i = 0
+            var pinGraphData = []
+            if (openPinGraphData.length !== 0) {
+                pinGraphData = openPinGraphData[pinIndex]
+            }
+
+
+            for (var i = yArray[pinIndex].length; i < pinGraphData.length; i++) {
+                addittionalData.push(pinGraphData[i])
+            }
+            return addittionalData
         }
 
 

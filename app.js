@@ -34,7 +34,6 @@ wss.on("request", request => {
         //console.log(message.utf8Data)
 
         if (jsonparse.title == "update-data") {
-            console.log("recieved request for updated data")
             updateData(connection[connection.indexOf(client)])
         }
         if (jsonparse.title == "open-pin") {
@@ -80,7 +79,6 @@ function updateData(connection) {
     chartData = {
         title: "chart-data",
         openPinData: openPinData,
-        data: "data here"
     }
 
     connection.send(JSON.stringify(chartData))
@@ -98,8 +96,10 @@ function openPin(gpioPin) {
     if (alreadyOpen) {
         console.log("Pin already open!")
     } else {
-        openPinData.push([JSON.parse(gpioPin), false])
+        var data = new Array()
+        openPinData.push([JSON.parse(gpioPin), false, data])
         console.log("Opening GPIO pin:" + gpioPin)
+        console.log(openPinData)
     }
     alreadyOpen = false
 }
@@ -107,9 +107,6 @@ function openPin(gpioPin) {
 //Function to close a gpio pin
 function closePin(gpioPin) {
     //Remove the port from open pins
-    console.log(openPinData)
-    console.log(gpioPin)
-    console.log(openPinData.length)
 
     var wasntOpen = true
 
@@ -149,4 +146,14 @@ function changeRecordingStatus(gpioPin) {
 function openConnectedPins() {
     console.log("Opening connected pins")
     //Write script that checks every gpio pin for valid data, and if found, runs add pin for that pin to make sure it is open
+}
+
+setInterval(getSensorData, 50)
+
+function getSensorData() {
+    for (var i = 0; i < openPinData.length; i++) {
+        //Here we push a random variable, in future will use gpio pin data here. 
+        openPinData[i][2].push(Math.random())
+    }
+
 }
