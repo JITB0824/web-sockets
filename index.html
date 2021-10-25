@@ -132,7 +132,7 @@
 
         var openPinGraphData = new Array()
 
-        setInterval(requestUpdateData, 500)
+        setInterval(requestUpdateData, 50)
         function updateData(openPinData) {
             openPins = new Array()
             openPinStatus = new Array()
@@ -239,7 +239,7 @@
         function createChart(pin) {
 
             //Create recording button
-            let buttonRecording = document.createElement("button-recording")
+            let buttonRecording = document.createElement("button")
             pinID = JSON.stringify(pin)
             console.log(" pinID is: " + pinID)
             buttonRecording.innerHTML = "Not recording"
