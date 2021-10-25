@@ -30,7 +30,7 @@
     <script>
         var ws = new WebSocket("ws://localhost:3000")
         function openws() {
-            var ws = new WebSocket("ws://localhost:3000")
+            location.reload()
         }
 
 
@@ -44,32 +44,27 @@
                 connected()
             }
         }
-
         ws.onclose = function () {
             console.log("disconnected and changing button")
-            var button = document.getElementById("site-status")
-            button.style = "background-color: red"
-            button.value = "Disconnected"
-            button = document.getElementById("reconnect-button")
-            button.style = "background-color: green"
-            button.value = "Reconnect"
-            button.onclick = function () { openws() }
+            var buttonSiteStatus = document.getElementById("site-status")
+            buttonSiteStatus.style = "background-color: red"
+            buttonSiteStatus.value = "Disconnected"
+            buttonReconnect = document.getElementById("reconnect-button")
+            buttonReconnect.style = "background-color: green"
+            buttonReconnect.value = "Reconnect"
+            buttonReconnect.onclick = function () { openws() }
         }
-
-
         //Update the HTML so the status shows green
         function connected() {
             console.log("connected and changing button")
-            var button = document.getElementById("site-status")
-            button.style = "background-color: green"
-            button.value = "Connected"
-            button = document.getElementById("reconnect-button")
-            button.style = "background-color: red"
-            button.value = "Disconnect"
-            button.onclick = function () { closeWebSocket() }
+            var buttonSiteStatus = document.getElementById("site-status")
+            buttonSiteStatus.style = "background-color: green"
+            buttonSiteStatus.value = "Connected"
+            buttonReconnect = document.getElementById("reconnect-button")
+            buttonReconnect.style = "background-color: red"
+            buttonReconnect.value = "Disconnect"
+            buttonReconnect.onclick = function () { closeWebSocket() }
         }
-
-
 
         chartUpdateJSON = JSON.stringify({
             "title": "chart-update",
@@ -124,11 +119,6 @@
             console.log("Closing websocket")
             ws.close()
         }
-
-
-
-
-
 
 
         //UPDATE PAGE
@@ -203,21 +193,19 @@
             //Set color of recording status
             for (var i = 0; i < openPins.length; i++) {
                 if (openPinStatus[i] == true) {
-                    button = document.getElementById(openPins[i])
-                    button.style.background = "green"
-                    button.innerHTML = ("Recording")
+                    buttonRecording = document.getElementById(openPins[i])
+                    buttonRecording.style.background = "green"
+                    buttonRecording.innerHTML = ("Recording")
                 } else {
-                    button = document.getElementById(openPins[i])
-                    button.style.background = "red"
-                    button.innerHTML = ("Not recording")
+                    buttonRecording = document.getElementById(openPins[i])
+                    buttonRecording.style.background = "red"
+                    buttonRecording.innerHTML = ("Not recording")
                 }
             }
 
             //Update the respective plot's data to the latest openPinData
             for (var i = 0; i < openPinGraphData.length; i++) {
                 latestMissingPoints = getLatestChartData(i)
-                console.log("missing points for " + openPins[i])
-                console.log("latest missing points " + latestMissingPoints)
                 Plotly.extendTraces("Plot" + openPins[i], { y: [latestMissingPoints] }, [0])
                 for (var j = 0; j < latestMissingPoints.length; j++) {
                     yArray[i].push(latestMissingPoints[j])
@@ -247,26 +235,27 @@
 
 
 
-
-
         //Handle creating charts/buttons per open thread
         function createChart(pin) {
-            let button = document.createElement("button")
+
+            //Create recording button
+            let buttonRecording = document.createElement("button-recording")
             pinID = JSON.stringify(pin)
             console.log(" pinID is: " + pinID)
-            button.innerHTML = "Not recording"
-            button.onclick = function () { changeRecordingStatus(pin) }
+            buttonRecording.innerHTML = "Not recording"
+            buttonRecording.onclick = function () { changeRecordingStatus(pin) }
 
+
+            // The magic incantations of plotly
             var layout = {
-                xaxis: { title: "x axis" },
-                yaxis: { title: "y axis" },
-                title: "Plot Pin " + pinID
+                xaxis: { title: "Polled Data Points" },
+                yaxis: { title: "Measured Values" },
+                title: "Plotting Pin " + pinID
             }
+
             let plot = document.createElement("div")
             plot.id = "Plot" + pinID
-
             yArray.push([[], []])
-
             var data = [{
                 x: xArray,
                 y: yArray,
@@ -274,18 +263,20 @@
             }]
 
             document.body.appendChild(plot)
-            document.body.appendChild(button)
+            document.body.appendChild(buttonRecording)
 
             Plotly.plot("Plot" + pinID, [{ y: new Array(), type: 'line' }], layout)
 
 
-            button.id = pinID
+            buttonRecording.id = pinID
+
+
         }
 
         //Handle removing charts/buttons per
         function removeChart(pin) {
-            var button = document.getElementById(JSON.stringify(pin))
-            button.remove()
+            var buttonRecording = document.getElementById(JSON.stringify(pin))
+            buttonRecording.remove()
             var plot = document.getElementById("Plot" + JSON.stringify(pin))
             plot.remove()
 
@@ -329,7 +320,7 @@
     <form>
         <label for="openPinField">Open new pin:</label><br>
         <input type="text" id="openPinField" name="openPinField">
-        <input type="button" value="Submit" onclick="gpioOpen()"><br><br>
+        <input type="button" value="Open pin" onclick="gpioOpen()"><br><br>
         <input type="button" value="Open connected pins" onclick="gpioOpenConnectedPins()"
             style="background-color: green"><br><br><br>
     </form>
@@ -337,7 +328,7 @@
     <form>
         <label for="closePinField">Close open pin:</label><br>
         <input type="text" id="closePinField" name="closePinField">
-        <input type="button" value="Submit" onclick="gpioClose()"><br><br>
+        <input type="button" value="Close pin" onclick="gpioClose()"><br><br>
         <input type="button" value="Close all pins" onclick="gpioCloseAll()" style="background-color: orange">
     </form><br><br>
 
