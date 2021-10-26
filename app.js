@@ -112,9 +112,9 @@ function openPin(gpioPin) {
         console.log("Pin already open!")
     } else {
         var data = new Array()
-        openPinData.push([JSON.parse(gpioPin), false, data])
+        var timestamps = new Array()
+        openPinData.push([JSON.parse(gpioPin), false, data, timestamps])
         console.log("Opening GPIO pin:" + gpioPin)
-        console.log(openPinData)
 
         //Keep recording counter array following with indices of openPinData
         recordingCounter.push([[], []])
@@ -189,6 +189,7 @@ function getSensorData() {
 
         //Here we push a random variable, in future will use gpio pin data here. 
         openPinData[i][2].push(randomVariable)
+        openPinData[i][3].push(deltaTime)
 
         //Here we need to take the sensor data point and throw it into passive recording
 
@@ -223,6 +224,8 @@ function getSensorData() {
 
 }
 
+
+
 //RECORDINGS
 //
 //
@@ -234,13 +237,31 @@ function downloadPassive(client, pin) {
         openPins.push(openPinData[i][0])
     }
     var pinIndex = openPins.indexOf(pin)
+    var dataset = new Array()
+    var datapoint = new Array()
+    for (var i = 0; i < openPinData[pinIndex][2].length; i++) {
+        datapoint[0] = openPinData[pinIndex][3][i]
+        datapoint[1] = openPinData[pinIndex][2][i]
+        console.log(datapoint[0])
+        console.log(datapoint[1])
 
-    data = openPinData[pinIndex][2]
-
+        dataset[i] = (datapoint)
+    }
+    console.log(dataset)
     var filename = "Passive Pin " + pin + " Data"
-
-    download(client, filename, data)
+    console.log([[1, 2, 3, 4, 5], [1, 2, 3, 4, 5]])
+    download(client, filename, dataset)
 }
+
+
+//Magic function for Excel
+function s2ab(s) {
+    var buf = new ArrayBuffer(s.length); //convert s to arrayBuffer
+    var view = new Uint8Array(buf);  //create uint8array as viewer
+    for (var i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xFF; //convert to octet
+    return buf;
+}
+
 
 function downloadRecordings(client, pin) {
     console.log("Sending out recordings")

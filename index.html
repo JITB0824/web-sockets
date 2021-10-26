@@ -8,6 +8,9 @@
     <title>Web Socket Server</title>
 </head>
 
+<script type="text/javascript" src="https://oss.sheetjs.com/sheetjs/xlsx.full.min.js"></script>
+<script src="jquery-2.1.4.js"></script>
+<script lang="javascript" src="xlsx.full.min.js"></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
 <style>
@@ -356,6 +359,24 @@
             element.click();
 
             document.body.removeChild(element);
+
+
+            var workbook = XLSX.utils.book_new()
+            workbook.Props = {
+                Title: filename,
+                Author: "Script and server created by Jack Taylor"
+            }
+
+            workbook.SheetNames.push("Passive Downloaded Data")
+
+            var worksheet = XLSX.utils.aoa_to_sheet(data)
+
+            workbook.Sheets["Passive Downloaded Data"] = worksheet
+
+            var workbookOutput = XLSX.write(workbook, { bookType: 'xlsx', type: 'binary' })
+
+            saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), filename + '.xlsx');
+
         }
 
 
