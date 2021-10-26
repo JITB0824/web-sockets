@@ -239,28 +239,17 @@ function downloadPassive(client, pin) {
     var pinIndex = openPins.indexOf(pin)
     var dataset = new Array()
     var datapoint = new Array()
-    for (var i = 0; i < openPinData[pinIndex][2].length; i++) {
-        datapoint[0] = openPinData[pinIndex][3][i]
-        datapoint[1] = openPinData[pinIndex][2][i]
-        console.log(datapoint[0])
-        console.log(datapoint[1])
+    var timerArray = openPinData[pinIndex][3]
+    var dataArray = openPinData[pinIndex][2]
 
-        dataset[i] = (datapoint)
-    }
+    var dataset = [timerArray, dataArray]
+
     console.log(dataset)
     var filename = "Passive Pin " + pin + " Data"
-    console.log([[1, 2, 3, 4, 5], [1, 2, 3, 4, 5]])
     download(client, filename, dataset)
 }
 
 
-//Magic function for Excel
-function s2ab(s) {
-    var buf = new ArrayBuffer(s.length); //convert s to arrayBuffer
-    var view = new Uint8Array(buf);  //create uint8array as viewer
-    for (var i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xFF; //convert to octet
-    return buf;
-}
 
 
 function downloadRecordings(client, pin) {

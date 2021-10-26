@@ -8,10 +8,11 @@
     <title>Web Socket Server</title>
 </head>
 
-<script type="text/javascript" src="https://oss.sheetjs.com/sheetjs/xlsx.full.min.js"></script>
-<script src="jquery-2.1.4.js"></script>
-<script lang="javascript" src="xlsx.full.min.js"></script>
+<script type="text/javascript" src="node_modules/xlsx/dist/xlsx.full.min.js"></script>
+<script src="node_modules/jquery/dist/jquery.js"></script>
+<script lang="javascript" src="node_modules/file-saver/dist/FileSaver.js"></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script lang="javascript" src"FileSaver.min.js"></script>
 
 <style>
     input.right {
@@ -349,18 +350,6 @@
 
         //Recieves data from server and downloads it
         function download(filename, data) {
-            var element = document.createElement('a');
-            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(data));
-            element.setAttribute('download', filename);
-
-            element.style.display = 'none';
-            document.body.appendChild(element);
-
-            element.click();
-
-            document.body.removeChild(element);
-
-
             var workbook = XLSX.utils.book_new()
             workbook.Props = {
                 Title: filename,
@@ -369,14 +358,25 @@
 
             workbook.SheetNames.push("Passive Downloaded Data")
 
-            var worksheet = XLSX.utils.aoa_to_sheet(data)
+            var worksheet = XLSX.utils.aoa_to_sheet(JSON.parse(transpose(data)))
 
             workbook.Sheets["Passive Downloaded Data"] = worksheet
 
             var workbookOutput = XLSX.write(workbook, { bookType: 'xlsx', type: 'binary' })
 
-            saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), filename + '.xlsx');
+            saveAs(new Blob([s2ab(workbookOutput)], { type: "application/octet-stream" }), filename + '.xlsx');
+        }
 
+        //Transpose function
+        transpose = m => m[0].map((x, i) => m.map(x => x[i]))
+
+
+        //Magic function for Excel
+        function s2ab(s) {
+            var buf = new ArrayBuffer(s.length); //convert s to arrayBuffer
+            var view = new Uint8Array(buf);  //create uint8array as viewer
+            for (var i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xFF; //convert to octet
+            return buf;
         }
 
 

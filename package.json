@@ -20,6 +20,8 @@
   "dependencies": {
     "FileReader": "^0.10.2",
     "file-reader": "^1.1.1",
+    "file-saver": "^2.0.5",
+    "jquery": "^3.6.0",
     "plotly": "^1.0.6",
     "plotly.js-dist": "^2.5.1",
     "websocket": "^1.0.34",
