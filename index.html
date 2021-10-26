@@ -355,9 +355,14 @@
                 Title: filename,
                 Author: "Script and server created by Jack Taylor"
             }
-            workbook.SheetNames.push("Passive Downloaded Data")
-            var worksheet = XLSX.utils.aoa_to_sheet(JSON.parse(data))
-            workbook.Sheets["Passive Downloaded Data"] = worksheet
+
+            for (var i = 0; i < data.length; i++) {
+                console.log(JSON.parse(data[i]))
+                workbook.SheetNames.push("Recording " + (i + 1))
+                var worksheet = XLSX.utils.aoa_to_sheet(JSON.parse(data[i]))
+                workbook.Sheets["Recording " + (i + 1)] = worksheet
+            }
+
             var workbookOutput = XLSX.write(workbook, { bookType: 'xlsx', type: 'binary' })
             saveAs(new Blob([s2ab(workbookOutput)], { type: "application/octet-stream" }), filename + '.xlsx');
         }
