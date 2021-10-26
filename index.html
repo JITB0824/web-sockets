@@ -355,21 +355,32 @@
                 Title: filename,
                 Author: "Script and server created by Jack Taylor"
             }
-
             workbook.SheetNames.push("Passive Downloaded Data")
-
-            var worksheet = XLSX.utils.aoa_to_sheet(JSON.parse(transpose(data)))
-
+            var worksheet = XLSX.utils.aoa_to_sheet(JSON.parse(data))
             workbook.Sheets["Passive Downloaded Data"] = worksheet
-
             var workbookOutput = XLSX.write(workbook, { bookType: 'xlsx', type: 'binary' })
-
             saveAs(new Blob([s2ab(workbookOutput)], { type: "application/octet-stream" }), filename + '.xlsx');
         }
 
         //Transpose function
-        transpose = m => m[0].map((x, i) => m.map(x => x[i]))
+        function transpose(array) {
+            var newArray = new Array()
+            //for (var i = 0; i < newArray.length; i++) {
+            //    newArray[i] = new Array(array[0].length)
+            //}
 
+            /*for (var i = 0; i < array[0].length; i++) {
+                newArray[i] = []
+            }*/
+
+            for (var i = 0; i < array.length; i++) {
+                for (var k = 0; k < array[i].length; k++) {
+                    newArray[array.length - i][array[i].length - k].push(array[i][k])
+                }
+            }
+
+            return newArray;
+        }
 
         //Magic function for Excel
         function s2ab(s) {

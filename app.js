@@ -165,7 +165,6 @@ function changeRecordingStatus(gpioPin) {
                 var fs = require('fs')
                 var data = fs.readFileSync(filepath, 'utf8')
                 data = data.replaceAt(data.length - 1, "]")
-                console.log(data)
             }
         }
     }
@@ -238,13 +237,13 @@ function downloadPassive(client, pin) {
     }
     var pinIndex = openPins.indexOf(pin)
     var dataset = new Array()
-    var datapoint = new Array()
+    var datapoint = new Array(new Array())
     var timerArray = openPinData[pinIndex][3]
     var dataArray = openPinData[pinIndex][2]
 
+
     var dataset = [timerArray, dataArray]
 
-    console.log(dataset)
     var filename = "Passive Pin " + pin + " Data"
     download(client, filename, dataset)
 }
@@ -263,17 +262,24 @@ function downloadRecordings(client, pin) {
     recordingData = new Array()
     filepath = __dirname + "\\PIN" + JSON.stringify(openPinData[pinIndex][0]) + "RECORDING" + recordingCounter[pinIndex][1] + ".txt"
     fileData = new Array()
+    console.log(recordingCounter[pinIndex][1])
     for (var i = 0; i < recordingCounter[pinIndex][1]; i++) {
+        filepath = __dirname + "\\PIN" + JSON.stringify(openPinData[pinIndex][0]) + "RECORDING" + (i + 1) + ".txt"
         var data = fs.readFileSync(filepath, 'utf8')
         data = data.replaceAt(data.length - 1, "]")
         //data = data.replaceAt(data.length, ",")
         fileData.push(JSON.parse(data))
     }
     //fileData[pinIndex] = fileData.replaceAt(data.length - 2, "]")
+    console.log(fileData)
     stringy = JSON.stringify(fileData)
+    console.log(stringy)
     var downloadedRecordings = JSON.parse(stringy)
-    filename = "Pin " + pin + " Recordings"
-    download(client, filename, downloadedRecordings)
+    filename = "Pin " + pin + " Recording" + recordingCounter[pinIndex][1]
+    for (var i = 0; i < downloadedRecordings.length; i++) {
+        download(client, filename, downloadedRecordings[i])
+    }
+
 }
 
 //Function to send data back to the client
