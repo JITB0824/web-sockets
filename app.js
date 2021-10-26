@@ -52,10 +52,10 @@ wss.on("request", request => {
             openConnectedPins()
         }
         if (jsonparse.title == "download-passive") {
-            downloadPassive(jsonparse.gpioPin)
+            downloadPassive(connection[connection.indexOf(client)], jsonparse.gpioPin)
         }
         if (jsonparse.title == "download-recordings") {
-            downloadRecordings(jsonparse.gpioPin)
+            downloadRecordings(connection[connection.indexOf(client)], jsonparse.gpioPin)
         }
     })
     connection[connection.indexOf(client)].on("close", function () {
@@ -135,7 +135,6 @@ function closePin(gpioPin) {
             openPinData.splice(i, 1)
             console.log("Closing GPIO pin:" + gpioPin)
             wasntOpen = false
-            recordingCounter.splice(i, 1)
             fsWriteStreams.splice(i, 1)
         }
     }
@@ -162,6 +161,11 @@ function changeRecordingStatus(gpioPin) {
 
             } else {
                 openPinData[i][1] = false
+                var filepath = __dirname + "\\PIN" + JSON.stringify(openPinData[i][0]) + "RECORDING" + recordingCounter[i][1] + ".txt"
+                var fs = require('fs')
+                var data = fs.readFileSync(filepath, 'utf8')
+                data = data.replaceAt(data.length - 1, "]")
+                console.log(data)
             }
         }
     }
@@ -198,18 +202,19 @@ function getSensorData() {
                     recordingCounter[i][1]++
                 }
                 //Here is the code that initializes the write streams
-                var writeStreamName = "PIN" + JSON.stringify(openPinData[i][0]) + "RECORDING" + recordingCounter[i][1]
+                var writeStreamName = "PIN" + JSON.stringify(openPinData[i][0]) + "RECORDING" + recordingCounter[i][1] + ".txt"
                 var fs = require('fs')
                 var writeStream = fs.createWriteStream(writeStreamName, {
                     flags: 'a'
                 })
                 fsWriteStreams[i] = [writeStreamName, writeStream]
-                writeStream.write(JSON.stringify(pinTimeData) + "\n")
+
+                writeStream.write("[" + JSON.stringify(pinTimeData) + ",")
 
                 firstRecordingLoop[i] = false
             } else {
                 var writeStream = fsWriteStreams[i][1]
-                writeStream.write(JSON.stringify(pinTimeData) + "\n")
+                writeStream.write(JSON.stringify(pinTimeData) + ",")
             }
 
         }
@@ -222,11 +227,22 @@ function getSensorData() {
 //
 //
 
-function downloadPassive(pin) {
+function downloadPassive(client, pin) {
     console.log("Sending out passive data")
+    var openPins = new Array()
+    for (var i = 0; i < openPinData.length; i++) {
+        openPins.push(openPinData[i][0])
+    }
+    var pinIndex = openPins.indexOf(pin)
+
+    data = openPinData[pinIndex][2]
+
+    var filename = "Passive Pin " + pin + " Data"
+
+    download(client, filename, data)
 }
 
-function downloadRecordings(pin) {
+function downloadRecordings(client, pin) {
     console.log("Sending out recordings")
     var fs = require('fs')
     openPins = new Array()
@@ -235,14 +251,35 @@ function downloadRecordings(pin) {
     }
     pinIndex = openPins.indexOf(pin)
     recordingData = new Array()
-    filename = JSON.stringify("PIN" + JSON.stringify(openPinData[pinIndex][0]) + "RECORDING" + recordingCounter[pinIndex][1] + ".txt")
+    filepath = __dirname + "\\PIN" + JSON.stringify(openPinData[pinIndex][0]) + "RECORDING" + recordingCounter[pinIndex][1] + ".txt"
     fileData = new Array()
     for (var i = 0; i < recordingCounter[pinIndex][1]; i++) {
-        fs.readFile(filename, function (err, data) {
-            console.log(data)
-            fileData.push(data)
-        })
+        var data = fs.readFileSync(filepath, 'utf8')
+        data = data.replaceAt(data.length - 1, "]")
+        //data = data.replaceAt(data.length, ",")
+        fileData.push(JSON.parse(data))
     }
-    console.log(filename)
-    console.log(fileData)
+    //fileData[pinIndex] = fileData.replaceAt(data.length - 2, "]")
+    stringy = JSON.stringify(fileData)
+    var downloadedRecordings = JSON.parse(stringy)
+    filename = "Pin " + pin + " Recordings"
+    download(client, filename, downloadedRecordings)
+}
+
+//Function to send data back to the client
+function download(client, filename, data) {
+    var message = JSON.stringify({
+        "title": "download",
+        "filename": filename,
+        "data": JSON.stringify(data)
+    })
+    for (var i = 0; i < connection.length; i++) {
+        connection[connection.indexOf(client)].send(message)
+    }
+}
+
+
+//Create a replace at to edit strings
+String.prototype.replaceAt = function (index, replacement) {
+    return this.substr(0, index) + replacement + this.substr(index + replacement.length);
 }

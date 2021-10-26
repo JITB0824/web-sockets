@@ -43,6 +43,9 @@
             if (jsonparse.title == "Connected") {
                 connected()
             }
+            if (jsonparse.title == "download") {
+                download(jsonparse.filename, jsonparse.data)
+            }
         }
         ws.onclose = function () {
             console.log("disconnected and changing button")
@@ -194,12 +197,12 @@
             for (var i = 0; i < openPins.length; i++) {
                 if (openPinStatus[i] == true) {
                     buttonRecording = document.getElementById(openPins[i])
-                    buttonRecording.style.background = "green"
-                    buttonRecording.innerHTML = ("Recording")
+                    buttonRecording.style.background = "red"
+                    buttonRecording.innerHTML = ("Stop recording")
                 } else {
                     buttonRecording = document.getElementById(openPins[i])
-                    buttonRecording.style.background = "red"
-                    buttonRecording.innerHTML = ("Not recording")
+                    buttonRecording.style.background = "green"
+                    buttonRecording.innerHTML = ("Start recording")
                 }
             }
 
@@ -242,7 +245,7 @@
             let buttonRecording = document.createElement("button")
             pinID = JSON.stringify(pin)
             console.log(" pinID is: " + pinID)
-            buttonRecording.innerHTML = "Not recording"
+            buttonRecording.innerHTML = "Start recording"
             buttonRecording.onclick = function () { changeRecordingStatus(pin) }
             buttonRecording.id = pinID
 
@@ -287,13 +290,14 @@
 
         //Handle removing charts/buttons per
         function removeChart(pin) {
-            var buttonRecording = document.getElementById(JSON.stringify(pin))
+            var buttonRecording = document.getElementById(pin)
             buttonRecording.remove()
             var plot = document.getElementById("Plot" + JSON.stringify(pin))
             plot.remove()
-            if (openPinData[i][1] == true) {
-                changeRecordingStatus(pin)
-            }
+            var downloadPassive = document.getElementById("download-passive" + JSON.stringify(pin))
+            downloadPassive.remove()
+            var downloadRecordings = document.getElementById("download-recordings" + JSON.stringify(pin))
+            downloadRecordings.remove()
 
         }
 
@@ -338,6 +342,20 @@
                 "gpioPin": pin
             })
             ws.send(message)
+        }
+
+        //Recieves data from server and downloads it
+        function download(filename, data) {
+            var element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(data));
+            element.setAttribute('download', filename);
+
+            element.style.display = 'none';
+            document.body.appendChild(element);
+
+            element.click();
+
+            document.body.removeChild(element);
         }
 
 
