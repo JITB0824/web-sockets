@@ -12,6 +12,17 @@ const wss = new WebSocketServer({
     "httpServer": httpserver
 })
 
+//Initialization code to read the saved openPinData.json file
+filepath = __dirname + "\\stateManager.json"
+var fs = require('fs')
+var stateManager = fs.readFileSync(filepath, 'utf8')
+console.log(stateManager)
+if (stateManager !== "") {
+    openPinData = JSON.parse(stateManager)
+}
+
+
+
 //Set http server to listen to port 3000
 httpserver.listen(3000, () => console.log('listening on port 3000'))
 
@@ -113,14 +124,9 @@ function openPin(gpioPin) {
     } else {
         var data = new Array()
         var timestamps = new Array()
-        writeStreams = new Array()
-        openPinData.push([JSON.parse(gpioPin), false, data, timestamps, recordingCounter, writeStreams])
+        openPinData.push([JSON.parse(gpioPin), false, data, timestamps, recordingCounter, [[], []]])
         recordingCounter = 0
         console.log("Opening GPIO pin:" + gpioPin)
-        var recordingCounterPins = new Array()
-        //Keep recording counter array following with indices of openPinData
-
-        writeStreams = new Array()
     }
     alreadyOpen = false
 
@@ -140,15 +146,11 @@ function closePin(gpioPin) {
 
             //Edit fileManager to remove the previous recordings
 
-
             var fs = require('fs')
-            console.log(openPinData)
-            console.log(openPinData[i][4])
             for (var j = 0; j < openPinData[i][4]; j++) {
-                fs.unlinkSync("PIN" + gpioPin + "RECORDING" + (j + 1) + ".txt", function (err) { })
-                openPinData[i][5][1].close()
+                fs.unlinkSync(openPinData[i][5][j][0], function (err) { })
+                openPinData[i][5][j][1].end()
             }
-
 
             //Must be the very last line
             openPinData.splice(i, 1)
@@ -168,8 +170,9 @@ function closeAllPins() {
     var length = openPinData.length
     for (var i = 0; i < length; i++) {
         for (var j = 0; j < openPinData[i][4]; j++) {
-            fs.unlinkSync("PIN" + openPinData[i][0] + "RECORDING" + (j + 1) + ".txt", function (err) { })
-            openPinData[i][5][1].close()
+            console.log("closing below file")
+            fs.unlinkSync(openPinData[i][5][j][0], function (err) { console.log("Couldnt close") })
+            openPinData[i][5][j][1].end()
 
         }
     }
@@ -216,14 +219,11 @@ function getSensorData() {
         openPinData[i][2].push(randomVariable)
         openPinData[i][3].push(deltaTime)
 
-        fsWriteStream = new Array()
-        //Here we need to take the sensor data point and throw it into passive recording
-
         //Here we check if recording, if we are we throw data point into recording file. 
         if (openPinData[i][1] == true) {
             if (firstRecordingLoop[i]) {
                 var fs = require('fs')
-
+                console.log("first recordiung loop creating new streams")
 
                 openPinData[i][4]++
 
@@ -242,12 +242,14 @@ function getSensorData() {
                 var writeStream = fs.createWriteStream(writeStreamName, {
                     flags: 'a'
                 })
-                openPinData[i][5] = [writeStreamName, writeStream]
+                openPinData[i][5].push([[], []])
+                openPinData[i][5][openPinData[i][4] - 1][0] = writeStreamName
+                openPinData[i][5][openPinData[i][4] - 1][1] = writeStream
                 writeStream.write("[" + JSON.stringify(pinTimeData) + ",")
-
+                console.log(openPinData)
                 firstRecordingLoop[i] = false
             } else {
-                var writeStream = openPinData[i][5][1]
+                writeStream = openPinData[i][5][openPinData[i][4] - 1][1]
                 writeStream.write(JSON.stringify(pinTimeData) + ",")
             }
         }
