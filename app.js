@@ -4,6 +4,8 @@
 const http = require('http')
 const httpserver = http.createServer((req, res) => {
     console.log('We recieved a request for an html server?')
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('Hello World\n');
 })
 
 //Create websocket server
