@@ -13,14 +13,12 @@ const wss = new WebSocketServer({
 })
 
 //Initialization code to read the saved openPinData.json file
-filepath = __dirname + "\\stateManager.json"
+stateFilePath = __dirname + "\\stateManager.json"
 var fs = require('fs')
-var stateManager = fs.readFileSync(filepath, 'utf8')
-console.log(stateManager)
-if (stateManager !== "") {
-    openPinData = JSON.parse(stateManager)
-}
-
+var data = fs.readFileSync(stateFilePath, 'utf8')
+openPinData = JSON.parse(data)
+fs.writeFileSync(stateFilePath, JSON.stringify(openPinData))
+console.log(openPinData)
 
 
 //Set http server to listen to port 3000
@@ -208,6 +206,7 @@ var start = Date.now()
 
 setInterval(getSensorData, 10)
 function getSensorData() {
+    //console.log("running for " + openPinData.length)
     for (var i = 0; i < openPinData.length; i++) {
         //Set a consistent random variable
         var deltaTime = Date.now() - start
@@ -218,6 +217,11 @@ function getSensorData() {
         //Here we push a random variable, in future will use gpio pin data here. 
         openPinData[i][2].push(randomVariable)
         openPinData[i][3].push(deltaTime)
+
+        //Here we save openPinData to state manager
+        var fs = require('fs')
+        fs.writeFileSync(stateFilePath, JSON.stringify(openPinData))
+
 
         //Here we check if recording, if we are we throw data point into recording file. 
         if (openPinData[i][1] == true) {
