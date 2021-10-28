@@ -15,7 +15,7 @@ const wss = new WebSocketServer({
 })
 
 //Initialization code to read the saved openPinData.json file
-stateFilePath = __dirname + "\\stateManager.json"
+stateFilePath = __dirname + "/stateManager.json"
 var fs = require('fs')
 var data = fs.readFileSync(stateFilePath, 'utf8')
 openPinData = JSON.parse(data)
