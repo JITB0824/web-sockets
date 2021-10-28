@@ -19,15 +19,14 @@
   "homepage": "https://github.com/JITB0824/web-sockets#readme",
   "dependencies": {
     "FileReader": "^0.10.2",
-    "epoll": "^4.0.1",
     "file-reader": "^1.1.1",
     "file-saver": "^2.0.5",
     "jquery": "^3.6.0",
     "node-gyp": "^8.3.0",
     "node-gyp-build": "^4.3.0",
+    "pigpio": "^3.3.1",
     "plotly": "^1.0.6",
     "plotly.js-dist": "^2.5.1",
-    "rpi-gpio": "^2.1.7",
     "websocket": "^1.0.34",
     "websockets": "^0.2.0",
     "xlsx": "^0.17.3"
