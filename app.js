@@ -4,6 +4,7 @@
 const http = require('http')
 var fs = require('fs')
 var XLSX = require('xlsx')
+var gpio = require('rpi-gpio')
 
 const httpserver = http.createServer((req, res) => {
     console.log('We recieved a request for an html server?')
@@ -11,6 +12,7 @@ const httpserver = http.createServer((req, res) => {
 
 //Create websocket server
 const WebSocketServer = require('websocket').server
+const { setgroups } = require('process')
 const wss = new WebSocketServer({
     "httpServer": httpserver
 })
@@ -127,6 +129,7 @@ function openPin(gpioPin) {
         openPinData.push([JSON.parse(gpioPin), false, data, timestamps, recordingCounter, [[], []]])
         recordingCounter = 0
         console.log("Opening GPIO pin:" + gpioPin)
+        gpio.setup(gpioPin, gpio.DIR_IN)
     }
     alreadyOpen = false
 
