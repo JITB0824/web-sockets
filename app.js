@@ -13,7 +13,6 @@ const httpserver = http.createServer((req, res) => {
 //Create websocket server
 const WebSocketServer = require('websocket').server
 const { setgroups } = require('process')
-const { Gpio } = require('pigpio')
 const wss = new WebSocketServer({
     "httpServer": httpserver
 })
