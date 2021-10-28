@@ -1,0 +1,1 @@
+var XLSX = require('xlsx')
