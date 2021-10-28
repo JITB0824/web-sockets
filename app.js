@@ -192,7 +192,7 @@ function changeRecordingStatus(gpioPin) {
 
             } else {
                 openPinData[i][1] = false
-                var filepath = __dirname + "\\PIN" + JSON.stringify(openPinData[i][0]) + "RECORDING" + openPinData[i][4] + ".txt"
+                var filepath = __dirname + "/PIN" + JSON.stringify(openPinData[i][0]) + "RECORDING" + openPinData[i][4] + ".txt"
                 var fs = require('fs')
                 var data = fs.readFileSync(filepath, 'utf8')
                 data = data.replaceAt(data.length - 1, "]")
@@ -297,11 +297,11 @@ function downloadRecordings(client, pin) {
     }
     pinIndex = openPins.indexOf(pin)
     recordingData = new Array()
-    filepath = __dirname + "\\PIN" + JSON.stringify(openPinData[pinIndex][0]) + "RECORDING" + openPinData[pinIndex][4] + ".txt"
+    filepath = __dirname + "/PIN" + JSON.stringify(openPinData[pinIndex][0]) + "RECORDING" + openPinData[pinIndex][4] + ".txt"
     fileData = new Array()
     //console.log(openPinData[pinIndex][4])
     for (var i = 0; i < openPinData[pinIndex][4]; i++) {
-        filepath = __dirname + "\\PIN" + JSON.stringify(openPinData[pinIndex][0]) + "RECORDING" + (i + 1) + ".txt"
+        filepath = __dirname + "/PIN" + JSON.stringify(openPinData[pinIndex][0]) + "RECORDING" + (i + 1) + ".txt"
         var data = fs.readFileSync(filepath, 'utf8')
         data = data.replaceAt(data.length - 1, "]")
         //data = data.replaceAt(data.length, ",")
