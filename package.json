@@ -18,9 +18,10 @@
   },
   "homepage": "https://github.com/JITB0824/web-sockets#readme",
   "dependencies": {
-    "FileReader": "^0.10.2",
+    "epoll": "^4.0.1",
     "file-reader": "^1.1.1",
     "file-saver": "^2.0.5",
+    "FileReader": "^0.10.2",
     "jquery": "^3.6.0",
     "node-gyp": "^8.3.0",
     "node-gyp-build": "^4.3.0",
