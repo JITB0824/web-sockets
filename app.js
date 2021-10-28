@@ -208,7 +208,7 @@ function openConnectedPins() {
 
 var start = Date.now()
 
-setInterval(getSensorData, 10)
+setInterval(getSensorData, 100)
 function getSensorData() {
     //console.log("running for " + openPinData.length)
     for (var i = 0; i < openPinData.length; i++) {
