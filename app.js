@@ -215,7 +215,7 @@ function getSensorData() {
     for (var i = 0; i < openPinData.length; i++) {
         //Set a consistent random variable
         var deltaTime = Date.now() - start
-        var randomVariable = Math.random() * 10
+        var randomVariable = getGPIO(openPinData[i][0])
         var pinTimeData = [deltaTime, randomVariable]
         start = Date.now()
 
@@ -264,6 +264,9 @@ function getSensorData() {
     }
 }
 
+function getGPIO(pin) {
+    return gpio.read(pin)
+}
 
 
 //RECORDINGS
