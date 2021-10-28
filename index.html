@@ -36,7 +36,7 @@
         function openws() {
             location.reload()
         }
-
+        const XLSX = require('xlsx')
 
         ws.onmessage = message => {
 
@@ -350,7 +350,7 @@
 
         //Recieves data from server and downloads it
         function download(filename, data) {
-            const XLSX = require('xlsx')
+
             var workbook = XLSX.utils.book_new()
             workbook.Props = {
                 Title: filename,
