@@ -158,6 +158,7 @@ function closePin(gpioPin) {
 
             //Must be the very last line
             openPinData.splice(i, 1)
+            rpio.close(gpioPin)
         }
     }
     if (wasntOpen) {
@@ -180,6 +181,7 @@ function closeAllPins() {
 
         }
     }
+    rpio.exit()
     openPinData = new Array()
 }
 
