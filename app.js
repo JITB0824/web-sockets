@@ -4,7 +4,7 @@
 const http = require('http')
 var fs = require('fs')
 var XLSX = require('xlsx')
-var gpio = require('rpi-gpio')
+var gpio = require('rpi-gpio').promise
 
 const httpserver = http.createServer((req, res) => {
     console.log('We recieved a request for an html server?')
