@@ -281,7 +281,7 @@ function downloadPassive(client, pin) {
     var dataArray = openPinData[pinIndex][2]
     var dataset = [timerArray, dataArray]
     var filename = "Passive Pin " + pin + " Data"
-    downloadP(client, filename, dataset)
+    download(client, filename, dataset, true)
 }
 
 
@@ -311,13 +311,13 @@ function downloadRecordings(client, pin) {
     var downloadedRecordings = JSON.parse(stringy)
     filename = "Pin " + pin + " Recordings"
     console.log(downloadedRecordings)
-    downloadR(client, filename, downloadedRecordings)
+    download(client, filename, downloadedRecordings)
 
 
 }
 
 //Function to send data back to the client
-function downloadR(client, filename, data) {
+function download(client, filename, data, passive) {
 
     var workbook = XLSX.utils.book_new()
     workbook.Props = {
@@ -326,37 +326,18 @@ function downloadR(client, filename, data) {
     }
     console.log(data)
     for (var i = 0; i < data.length; i++) {
-        console.log(data[i])
-        console.log(JSON.parse(data[i]))
-        workbook.SheetNames.push("Recording " + (i + 1))
-        var worksheet = XLSX.utils.aoa_to_sheet(JSON.parse(data[i]))
-        workbook.Sheets["Recording " + (i + 1)] = worksheet
-    }
-
-    var workbookOutput = XLSX.write(workbook, { bookType: 'xlsx', type: 'binary' })
-
-    var message = JSON.stringify({
-        "title": "download",
-        "filename": filename,
-        "data": data,
-        "workbookOutput": workbookOutput
-    })
-    connection[connection.indexOf(client)].send(message)
-}
-
-function downloadP(client, filename, data) {
-
-    var workbook = XLSX.utils.book_new()
-    workbook.Props = {
-        Title: filename,
-        Author: "Script and server created by Jack Taylor"
-    }
-    console.log(data)
-    for (var i = 0; i < data.length; i++) {
-        console.log(data[i])
-        workbook.SheetNames.push("Recording " + (i + 1))
-        var worksheet = XLSX.utils.aoa_to_sheet(data[i])
-        workbook.Sheets["Recording " + (i + 1)] = worksheet
+        if (passive) {
+            console.log(data[i])
+            workbook.SheetNames.push("Recording " + (i + 1))
+            var worksheet = XLSX.utils.aoa_to_sheet(data[i])
+            workbook.Sheets["Recording " + (i + 1)] = worksheet
+        } else {
+            console.log(data[i])
+            console.log(JSON.parse(data[i]))
+            workbook.SheetNames.push("Recording " + (i + 1))
+            var worksheet = XLSX.utils.aoa_to_sheet(JSON.parse(data[i]))
+            workbook.Sheets["Recording " + (i + 1)] = worksheet
+        }
     }
 
     var workbookOutput = XLSX.write(workbook, { bookType: 'xlsx', type: 'binary' })
