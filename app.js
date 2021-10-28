@@ -327,9 +327,13 @@ function download(client, filename, data, passive) {
     console.log(data)
     for (var i = 0; i < data.length; i++) {
         if (passive) {
+            var recompiledData = new Array()
+            for (var n = 0; n < data[0].length; n++) {
+                recompiledData.push([data[0][n], data[1][n]])
+            }
             console.log(data[i])
             workbook.SheetNames.push("Recording " + (i + 1))
-            var worksheet = XLSX.utils.aoa_to_sheet(data[i])
+            var worksheet = XLSX.utils.aoa_to_sheet(recompiledData)
             workbook.Sheets["Recording " + (i + 1)] = worksheet
         } else {
             console.log(data[i])
