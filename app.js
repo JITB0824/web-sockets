@@ -19,11 +19,10 @@ const wss = new WebSocketServer({
 
 //Initialization code to read the saved openPinData.json file
 stateFilePath = __dirname + "/stateManager.json"
-var fs = require('fs')
-var data = fs.readFileSync(stateFilePath, 'utf8')
-openPinData = JSON.parse(data)
-fs.writeFileSync(stateFilePath, JSON.stringify(openPinData))
-console.log(openPinData)
+//var data = fs.readFileSync(stateFilePath, 'utf8')
+//openPinData = JSON.parse(data)
+//fs.writeFileSync(stateFilePath, JSON.stringify(openPinData))
+//console.log(openPinData)
 
 
 //Set http server to listen to port 3000
@@ -224,8 +223,7 @@ function getSensorData() {
         openPinData[i][3].push(deltaTime)
 
         //Here we save openPinData to state manager
-        var fs = require('fs')
-        fs.writeFileSync(stateFilePath, JSON.stringify(openPinData))
+        //fs.writeFileSync(stateFilePath, JSON.stringify(openPinData))
 
 
         //Here we check if recording, if we are we throw data point into recording file. 
