@@ -4,7 +4,7 @@
 const http = require('http')
 var fs = require('fs')
 var XLSX = require('xlsx')
-var gpio = require('pigpio').Gpio
+var rpio = require('rpio')
 
 const httpserver = http.createServer((req, res) => {
     console.log('We recieved a request for an html server?')
@@ -127,9 +127,10 @@ function openPin(gpioPin) {
     } else {
         var data = new Array()
         var timestamps = new Array()
-        openPinData.push([JSON.parse(gpioPin), false, data, timestamps, recordingCounter, [[], []], new Gpio(gpioPin, { mode: Gpio.INPUT })])
+        openPinData.push([JSON.parse(gpioPin), false, data, timestamps, recordingCounter, [[], []]])
         recordingCounter = 0
         console.log("Opening GPIO pin:" + gpioPin)
+        rpio.open(gpioPin, rpio.INPUT)
     }
     alreadyOpen = false
 
@@ -215,7 +216,7 @@ function getSensorData() {
     for (var i = 0; i < openPinData.length; i++) {
         //Set a consistent random variable
         var deltaTime = Date.now() - start
-        var randomVariable = gpio.read(openPinData[i][6])
+        var randomVariable = rpio.read(openPinData[i][0])
         var pinTimeData = [deltaTime, randomVariable]
         start = Date.now()
 

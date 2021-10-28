@@ -24,9 +24,9 @@
     "jquery": "^3.6.0",
     "node-gyp": "^8.3.0",
     "node-gyp-build": "^4.3.0",
-    "pigpio": "^3.3.1",
     "plotly": "^1.0.6",
     "plotly.js-dist": "^2.5.1",
+    "rpio": "^2.4.2",
     "websocket": "^1.0.34",
     "websockets": "^0.2.0",
     "xlsx": "^0.17.3"
