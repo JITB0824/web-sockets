@@ -7,8 +7,6 @@ var XLSX = require('xlsx')
 
 const httpserver = http.createServer((req, res) => {
     console.log('We recieved a request for an html server?')
-    res.writeHead(200, { 'Content-Type': 'text/html' });
-    fs.createReadStream('index.html').pipe(res);
 })
 
 //Create websocket server
