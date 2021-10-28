@@ -47,7 +47,7 @@
                 connected()
             }
             if (jsonparse.title == "download") {
-                download(jsonparse.filename, jsonparse.data)
+                download(jsonparse.filename, jsonparse.data, jsonparse.xlsx)
             }
         }
         ws.onclose = function () {
@@ -348,7 +348,7 @@
         }
 
         //Recieves data from server and downloads it
-        function download(filename, data) {
+        function download(filename, data, XLSX) {
 
             var workbook = XLSX.utils.book_new()
             workbook.Props = {

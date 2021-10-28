@@ -322,7 +322,8 @@ function download(client, filename, data) {
     var message = JSON.stringify({
         "title": "download",
         "filename": filename,
-        "data": data
+        "data": data,
+        "xlsx": XLSX
     })
     for (var i = 0; i < connection.length; i++) {
         connection[connection.indexOf(client)].send(message)
