@@ -320,15 +320,30 @@ function downloadRecordings(client, pin) {
 
 //Function to send data back to the client
 function download(client, filename, data) {
+
+    var workbook = XLSX.utils.book_new()
+    workbook.Props = {
+        Title: filename,
+        Author: "Script and server created by Jack Taylor"
+    }
+    console.log(data)
+    for (var i = 0; i < data.length; i++) {
+        console.log(data[i])
+        console.log(JSON.parse(data[i]))
+        workbook.SheetNames.push("Recording " + (i + 1))
+        var worksheet = XLSX.utils.aoa_to_sheet(JSON.parse(data[i]))
+        workbook.Sheets["Recording " + (i + 1)] = worksheet
+    }
+
+    var workbookOutput = XLSX.write(workbook, { bookType: 'xlsx', type: 'binary' })
+
     var message = JSON.stringify({
         "title": "download",
         "filename": filename,
         "data": data,
-        "xlsx": XLSX
+        "workbookOutput": workbookOutput
     })
-    for (var i = 0; i < connection.length; i++) {
-        connection[connection.indexOf(client)].send(message)
-    }
+    connection[connection.indexOf(client)].send(message)
 }
 
 

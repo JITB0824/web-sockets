@@ -47,7 +47,7 @@
                 connected()
             }
             if (jsonparse.title == "download") {
-                download(jsonparse.filename, jsonparse.data, jsonparse.xlsx)
+                download(jsonparse.filename, jsonparse.data, jsonparse.workbookOutput)
             }
         }
         ws.onclose = function () {
@@ -348,23 +348,8 @@
         }
 
         //Recieves data from server and downloads it
-        function download(filename, data, XLSX) {
+        function download(filename, data, workbookOutput) {
 
-            var workbook = XLSX.utils.book_new()
-            workbook.Props = {
-                Title: filename,
-                Author: "Script and server created by Jack Taylor"
-            }
-            console.log(data)
-            for (var i = 0; i < data.length; i++) {
-                console.log(data[i])
-                console.log(JSON.parse(data[i]))
-                workbook.SheetNames.push("Recording " + (i + 1))
-                var worksheet = XLSX.utils.aoa_to_sheet(JSON.parse(data[i]))
-                workbook.Sheets["Recording " + (i + 1)] = worksheet
-            }
-
-            var workbookOutput = XLSX.write(workbook, { bookType: 'xlsx', type: 'binary' })
             saveAs(new Blob([s2ab(workbookOutput)], { type: "application/octet-stream" }), filename + '.xlsx');
         }
 
