@@ -132,7 +132,7 @@
         //UPDATE PAGE
         //
         //
-        var lastValue = 1;
+
         setInterval(requestUpdateData, 10)
         function updateData(openPinData) {
             openPins = new Array()
@@ -196,18 +196,13 @@
             }
 
             for (var i = 0; i < openPinData.length; i++) {
-                for (var n = 0; n < openPinData[i][2]; n++) {
-                    if (openPinData[i][2][n] !== lastValue) {
-                        Plotly.extendTraces("Plot" + openPins[i], { y: [openPinData[i][2][n]] }, [0])
-                    }
-                }
-
+                Plotly.extendTraces("Plot" + openPins[i],{ y: [openPinData[i][2]] }, [0])
                 if (openPinData[i][6] > 3000) {
-                    Plotly.relayout("Plot" + openPins[i], {
-                        xaxis: {
-                            range: [openPinData[i][6] - 3000, openPinData[i][6]]
-                        }
-                    })
+                   Plotly.relayout("Plot" + openPins[i], {
+                      xaxis: {
+                         range: [openPinData[i][6] - 3000, openPinData[i][6]]
+                      }
+                   })
                 }
             }
         }
@@ -244,10 +239,10 @@
             plot.id = "Plot" + pinID
 
 
-            var data = [{
-                y: [0, 0],
-                type: 'scatter'
-            }];
+var data = [{
+  y: [0, 0],
+  type: 'scatter'
+}];
 
             //Create download buttons
             let downloadPassiveButton = document.createElement("button")
@@ -268,7 +263,7 @@
             document.body.appendChild(downloadPassiveButton)
             document.body.appendChild(downloadRecordingsButton)
 
-            Plotly.plot("Plot" + pinID, data, layout)
+            Plotly.plot("Plot" + pinID, data , layout)
 
         }
 
