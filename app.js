@@ -103,7 +103,6 @@ var chartData = {
 
 //Function to update chart data on all clients
 function updateData(connection) {
-    openPinData[i][6] += openPinData[i][2].length
     chartData = {
         title: "chart-data",
         openPinData: openPinData,
@@ -225,6 +224,7 @@ function getSensorData() {
         var randomVariable = rpio.read(openPinData[i][0])
         var pinTimeData = [deltaTime, randomVariable]
         start = Date.now()
+        openPinData[i][6]++
 
         //Here we push a random variable, in future will use gpio pin data here. 
         openPinData[i][2].push(randomVariable)
