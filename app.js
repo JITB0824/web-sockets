@@ -216,6 +216,7 @@ var start = Date.now()
 
 setInterval(getSensorData, 1)
 function getSensorData() {
+    console.log(openPinData)
     //console.log("running for " + openPinData.length)
     for (var i = 0; i < openPinData.length; i++) {
         //Set a consistent random variable

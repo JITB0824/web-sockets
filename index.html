@@ -134,6 +134,7 @@
 
         setInterval(requestUpdateData, 10)
         function updateData(openPinData) {
+            console.log(openPinData)
             openPins = new Array()
             for (var i = 0; i < openPinData.length; i++) {
                 openPins.push(openPinData[i][0])
