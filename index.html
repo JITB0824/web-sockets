@@ -250,7 +250,7 @@
             document.body.appendChild(downloadPassiveButton)
             document.body.appendChild(downloadRecordingsButton)
 
-            Plotly.plot("Plot" + pinID, [{ y: new Array(), type: 'line' }], layout)
+            Plotly.plot("Plot" + pinID, { y: [new Array()], type: 'line' }, layout)
 
         }
 
