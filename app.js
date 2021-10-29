@@ -103,6 +103,7 @@ var chartData = {
 
 //Function to update chart data on all clients
 function updateData(connection) {
+    openPinData[i][6] += openPinData[i][2].length
     chartData = {
         title: "chart-data",
         openPinData: openPinData,
