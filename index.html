@@ -132,9 +132,8 @@
         //
         //
 
-        setInterval(requestUpdateData, 10)
+        setInterval(requestUpdateData, 1)
         function updateData(openPinData) {
-            console.log(openPinData)
             openPins = new Array()
             for (var i = 0; i < openPinData.length; i++) {
                 openPins.push(openPinData[i][0])
@@ -196,19 +195,8 @@
             }
 
             for (var i = 0; i < openPinData.length; i++) {
-                Plotly.extendTraces("Plot" + openPins[i], { y: openPinData[i][2] }, [0], 3000)
-
-            }
-
-            //Update each plot's x-axis range and y axis range
-            for (var i = 0; i < openPinData[i][6]; i++ && openPinData[i][6] > 2) {
-                if (openPinData[i][6] > 3000) {
-                    Plotly.relayout("Plot" + openPins[i], {
-                        xaxis: {
-                            range: [openPinData[i][6] - 3000, openPinData[i][6]]
-                        }
-                    })
-                }
+                console.log(openPinData[i][2])
+                Plotly.extendTraces("Plot" + openPins[i], { y: [openPinData[i][2]] }, [0], 3000)
             }
         }
 
@@ -241,7 +229,7 @@
                 title: "Plotting Pin " + pinID
             }
             let plot = document.createElement("div")
-
+            plot.id = "Plot" + pinID
 
             //Create download buttons
             let downloadPassiveButton = document.createElement("button")

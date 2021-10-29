@@ -91,15 +91,14 @@ var recordingCounter = new Array()
 //Initialize first recording loop boolean to know when you should start a new recording file
 var firstRecordingLoop = new Array()
 
-//Create fs array to keep track of open write streams
-var fsWriteStreams = new Array()
-
 
 //Create a test JSON array 
 var chartData = {
     title: "chart-data",
     message: "This is the server"
 }
+
+var database = new Array()
 
 //Function to update chart data on all clients
 function updateData(connection) {
@@ -229,6 +228,8 @@ function getSensorData() {
         //Here we push a random variable, in future will use gpio pin data here. 
         openPinData[i][2].push(randomVariable)
         openPinData[i][3].push(deltaTime)
+
+        database[i].push(pinTimeData)
 
         //Here we save openPinData to state manager
         //fs.writeFileSync(stateFilePath, JSON.stringify(openPinData))
