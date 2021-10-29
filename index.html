@@ -198,9 +198,18 @@
             for (var i = 0; i < openPinData.length; i++) {
 
                 if (openPinData[i][6] > 3000) {
-                    let zeroArray = new Array(openPinData[i][6] - 3000); for (let n = 0; n < openPinData[i][6] - 3000; ++n) zeroArray[n] = 0;
-                    console.log([zeroArray + openPinData[i][2]])
-                    Plotly.restyle("Plot" + openPins[i], { y: [zeroArray + openPinData[i][2]] }, [0])
+
+                    let dataArray = new Array(openPinData[i][6])
+                    for (let n = 0; n < openPinData[i][6]; n++) {
+                        if (n < openPinData[i][6] - 3000) {
+                            dataArray[i] = 0
+                        } else {
+                            dataArray[i] = openPinData[i][2]
+                        }
+
+                    }
+                    console.log([dataArray])
+                    Plotly.restyle("Plot" + openPins[i], { y: [dataArray] }, [0])
                     Plotly.relayout("Plot" + openPins[i], {
                         xaxis: {
                             range: [openPinData[i][6] - 3000, openPinData[i][6]]
