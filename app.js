@@ -103,13 +103,15 @@ var chartData = {
 
 //Function to update chart data on all clients
 function updateData(connection) {
-
     chartData = {
         title: "chart-data",
         openPinData: openPinData,
     }
-
     connection.send(JSON.stringify(chartData))
+    for (var i = 0; i < openPinData.length; i++) {
+        openPinData[i][2] = new Array()
+        openPinData[i][3] = new Array()
+    }
 }
 
 //Function to open a new GPIO pin

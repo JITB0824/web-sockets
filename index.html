@@ -137,29 +137,19 @@
         var yArray = [[], []]
         console.log(yArray)
 
-        var openPinGraphData = new Array()
-
         setInterval(requestUpdateData, 100)
         function updateData(openPinData) {
             openPins = new Array()
-            openPinStatus = new Array()
-            openPinGraphData = new Array()
             for (var i = 0; i < openPinData.length; i++) {
                 openPins.push(openPinData[i][0])
-                openPinStatus.push(openPinData[i][1])
-                openPinGraphData.push(openPinData[i][2])
             }
-
-
             document.getElementById("openPins").value = openPins
-
-
 
             //check if graphs need to be created
             var pinAlreadyAdded = false
             for (var i = 0; i < openPins.length; i++) {
                 for (var j = 0; j < openPinHTMLAdded.length; j++) {
-                    if (openPins[i] == openPinHTMLAdded[j]) {
+                    if (openPinData[i][0] == openPinHTMLAdded[j]) {
                         pinAlreadyAdded = true
                     }
                 }
@@ -199,7 +189,7 @@
 
             //Set color of recording status
             for (var i = 0; i < openPins.length; i++) {
-                if (openPinStatus[i] == true) {
+                if (openPinData[i][1] == true) {
                     buttonRecording = document.getElementById(openPins[i])
                     buttonRecording.style.background = "red"
                     buttonRecording.innerHTML = ("Stop recording")
@@ -210,14 +200,8 @@
                 }
             }
 
-            //Update the respective plot's data to the latest openPinData
-            for (var i = 0; i < openPinGraphData.length; i++) {
-                latestMissingPoints = getLatestChartData(i)
-                Plotly.extendTraces("Plot" + openPins[i], { y: [latestMissingPoints] }, [0])
-                for (var j = 0; j < latestMissingPoints.length; j++) {
-                    yArray[i].push(latestMissingPoints[j])
-                }
-            }
+            Plotly.extendTraces("Plot" + openPins[i], { y: [latestMissingPoints] }, [0])
+            yArray[i].push(latestMissingPoints[j])
 
             //Update each plot's x-axis range and y axis range
             for (var i = 0; i < yArray.length; i++ && yArray.length > 2) {
@@ -314,21 +298,6 @@
             ws.send(changeRecordingStatus)
         }
 
-        //Create function that sends back what points need to be added
-        function getLatestChartData(pinIndex) {
-            var addittionalData = new Array()
-            var i = 0
-            var pinGraphData = []
-            if (openPinGraphData.length !== 0) {
-                pinGraphData = openPinGraphData[pinIndex]
-            }
-
-
-            for (var i = yArray[pinIndex].length; i < pinGraphData.length; i++) {
-                addittionalData.push(pinGraphData[i])
-            }
-            return addittionalData
-        }
 
         function downloadPassive(pin) {
             console.log("Downloading entire graph to client")
