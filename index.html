@@ -196,6 +196,7 @@
             }
 
             for (var i = 0; i < openPinData.length; i++) {
+                console.log([openPinData[i][2]])
                 Plotly.restyle("Plot" + openPins[i], { y: [openPinData[i][2]] }, [0])
                 if (openPinData[i][6] > 3000) {
                     Plotly.relayout("Plot" + openPins[i], {
