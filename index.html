@@ -137,7 +137,7 @@
         var yArray = [[], []]
         console.log(yArray)
 
-        setInterval(requestUpdateData, 100)
+        setInterval(requestUpdateData, 1)
         function updateData(openPinData) {
             openPins = new Array()
             for (var i = 0; i < openPinData.length; i++) {
@@ -200,8 +200,10 @@
                 }
             }
 
-            Plotly.extendTraces("Plot" + openPins[i], { y: [latestMissingPoints] }, [0])
-            yArray[i].push(latestMissingPoints[j])
+            for (var i = 0; i < openPinData.length; i++) {
+                Plotly.extendTraces("Plot" + openPins[i], { y: [latestMissingPoints] }, [0], 3000)
+                yArray[i].push(latestMissingPoints[j])
+            }
 
             //Update each plot's x-axis range and y axis range
             for (var i = 0; i < yArray.length; i++ && yArray.length > 2) {
