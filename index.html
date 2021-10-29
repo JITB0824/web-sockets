@@ -132,12 +132,7 @@
         //
         //
 
-        //Reset data array
-        var xArray = new Array()
-        var yArray = [[], []]
-        console.log(yArray)
-
-        setInterval(requestUpdateData, 1)
+        setInterval(requestUpdateData, 10)
         function updateData(openPinData) {
             openPins = new Array()
             for (var i = 0; i < openPinData.length; i++) {
@@ -179,7 +174,6 @@
                 } else {
                     console.log("removing chart for pin: " + openPinHTMLAdded[i])
                     removeChart(openPinHTMLAdded[i])
-                    yArray.splice(i, 1)
                     openPinHTMLAdded.splice(i, 1)
                 }
 
@@ -202,15 +196,15 @@
 
             for (var i = 0; i < openPinData.length; i++) {
                 Plotly.extendTraces("Plot" + openPins[i], { y: openPinData[i][2] }, [0], 3000)
-                yArray[i].push(latestMissingPoints[j])
+                openPinData[i][6] += openPinData[i][2].length
             }
 
             //Update each plot's x-axis range and y axis range
-            for (var i = 0; i < yArray.length; i++ && yArray.length > 2) {
-                if (yArray[i].length > 3000) {
+            for (var i = 0; i < yArray.length; i++ && openPinData[i][6] > 2) {
+                if (openPinData[i][6] > 3000) {
                     Plotly.relayout("Plot" + openPins[i], {
                         xaxis: {
-                            range: [yArray[i].length - 3000, yArray[i].length]
+                            range: [openPinData[i][6] - 3000, openPinData[i][6]]
                         }
                     })
                 }

@@ -128,7 +128,8 @@ function openPin(gpioPin) {
     } else {
         var data = new Array()
         var timestamps = new Array()
-        openPinData.push([JSON.parse(gpioPin), false, data, timestamps, recordingCounter, [[], []]])
+        var graphWidth = 0
+        openPinData.push([JSON.parse(gpioPin), false, data, timestamps, recordingCounter, [[], []], graphWidth])
         recordingCounter = 0
         console.log("Opening GPIO pin:" + gpioPin)
         rpio.open(gpioPin, rpio.INPUT)
