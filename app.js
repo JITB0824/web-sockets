@@ -182,8 +182,8 @@ function closeAllPins() {
             openPinData[i][5][j][1].end()
 
         }
+        rpio.close(openPinData[i][0])
     }
-    rpio.exit()
     openPinData = new Array()
 }
 
@@ -332,18 +332,18 @@ function download(client, filename, data, passive) {
     }
     console.log(data)
     for (var i = 0; i < data.length; i++) {
-      if (passive) {
+        if (passive) {
             console.log(data[i])
             workbook.SheetNames.push("Recording " + (i + 1))
             var worksheet = XLSX.utils.aoa_to_sheet(data[i])
             workbook.Sheets["Recording " + (i + 1)] = worksheet
-      } else {
+        } else {
             console.log(data[i])
             console.log(JSON.parse(data[i]))
             workbook.SheetNames.push("Recording " + (i + 1))
             var worksheet = XLSX.utils.aoa_to_sheet(JSON.parse(data[i]))
             workbook.Sheets["Recording " + (i + 1)] = worksheet
-      }
+        }
     }
 
     var workbookOutput = XLSX.write(workbook, { bookType: 'xlsx', type: 'binary' })
