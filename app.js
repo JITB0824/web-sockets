@@ -128,7 +128,7 @@ function openPin(gpioPin) {
         var data = new Array()
         var timestamps = new Array()
         var graphWidth = 0
-        openPinData.push([JSON.parse(gpioPin), false, data, timestamps, recordingCounter, [[], []], graphWidth, 1])
+        openPinData.push([JSON.parse(gpioPin), false, data, timestamps, recordingCounter, [[], []], graphWidth])
         recordingCounter = 0
         console.log("Opening GPIO pin:" + gpioPin)
         rpio.open(gpioPin, rpio.INPUT)
@@ -332,18 +332,18 @@ function download(client, filename, data, passive) {
     }
     console.log(data)
     for (var i = 0; i < data.length; i++) {
-        if (passive) {
+      if (passive) {
             console.log(data[i])
             workbook.SheetNames.push("Recording " + (i + 1))
             var worksheet = XLSX.utils.aoa_to_sheet(data[i])
             workbook.Sheets["Recording " + (i + 1)] = worksheet
-        } else {
+      } else {
             console.log(data[i])
             console.log(JSON.parse(data[i]))
             workbook.SheetNames.push("Recording " + (i + 1))
             var worksheet = XLSX.utils.aoa_to_sheet(JSON.parse(data[i]))
             workbook.Sheets["Recording " + (i + 1)] = worksheet
-        }
+      }
     }
 
     var workbookOutput = XLSX.write(workbook, { bookType: 'xlsx', type: 'binary' })

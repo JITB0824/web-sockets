@@ -132,6 +132,7 @@
         //UPDATE PAGE
         //
         //
+        var lastValue = 1;
         setInterval(requestUpdateData, 10)
         function updateData(openPinData) {
             openPins = new Array()
@@ -196,9 +197,8 @@
 
             for (var i = 0; i < openPinData.length; i++) {
                 for (var n = 0; n < openPinData[i][2]; n++) {
-                    if (openPinData[i][2][n] !== openPinData[i][7]) {
+                    if (openPinData[i][2][n] !== lastValue) {
                         Plotly.extendTraces("Plot" + openPins[i], { y: [openPinData[i][2][n]] }, [0])
-                        openPinData[i][7] = openPinData[i][2][n]
                     }
                 }
 
