@@ -70,6 +70,9 @@ wss.on("request", request => {
         if (jsonparse.title == "download-recordings") {
             downloadRecordings(connection[connection.indexOf(client)], jsonparse.gpioPin)
         }
+        if (jsonparse.title == "polling-rate") {
+            updatePollingRate(jsonparse.pollingRate)
+        }
     })
     connection[connection.indexOf(client)].on("close", function () {
         connection.splice(connection.indexOf(client), 1)
@@ -209,8 +212,10 @@ function openConnectedPins() {
 }
 
 var start = Date.now()
+var pollingRate = 1
 
-setInterval(getSensorData, 1)
+
+setInterval(getSensorData, pollingRate)
 function getSensorData() {
     //console.log("running for " + openPinData.length)
     for (var i = 0; i < openPinData.length; i++) {
@@ -360,4 +365,8 @@ function download(client, filename, data, passive) {
 //Create a replace at to edit strings
 String.prototype.replaceAt = function (index, replacement) {
     return this.substr(0, index) + replacement + this.substr(index + replacement.length);
+}
+
+function updatePollingRate(pollingRateInput) {
+    pollingRate = pollingRateInput
 }
