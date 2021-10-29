@@ -200,7 +200,7 @@
             }
 
             //Update each plot's x-axis range and y axis range
-            for (var i = 0; i < yArray.length; i++ && openPinData[i][6] > 2) {
+            for (var i = 0; i < openPinData[i][6]; i++ && openPinData[i][6] > 2) {
                 if (openPinData[i][6] > 3000) {
                     Plotly.relayout("Plot" + openPins[i], {
                         xaxis: {
