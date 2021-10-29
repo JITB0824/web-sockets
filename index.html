@@ -45,7 +45,7 @@
                 updateData(jsonparse.openPinData)
             }
             if (jsonparse.title == "Connected") {
-                connected()
+                connected(jsonparse.database)
             }
             if (jsonparse.title == "download") {
                 download(jsonparse.filename, jsonparse.data, jsonparse.workbookOutput)
@@ -62,7 +62,7 @@
             buttonReconnect.onclick = function () { openws() }
         }
         //Update the HTML so the status shows green
-        function connected() {
+        function connected(importDatabase) {
             console.log("connected and changing button")
             var buttonSiteStatus = document.getElementById("site-status")
             buttonSiteStatus.style = "background-color: green"
@@ -71,6 +71,7 @@
             buttonReconnect.style = "background-color: red"
             buttonReconnect.value = "Disconnect"
             buttonReconnect.onclick = function () { closeWebSocket() }
+            database = importDatabase
         }
 
         chartUpdateJSON = JSON.stringify({
@@ -195,8 +196,8 @@
             }
 
             for (var i = 0; i < openPinData.length; i++) {
-                console.log(openPinData[i][2])
-                Plotly.extendTraces("Plot" + openPins[i], { y: [openPinData[i][2]] }, [0], 3000)
+                console.log([openPinData[i][2]])
+                Plotly.extendTraces("Plot" + openPins[i], [{ y: [openPinData[i][2]] }], [0], 3000)
             }
         }
 
@@ -250,7 +251,7 @@
             document.body.appendChild(downloadPassiveButton)
             document.body.appendChild(downloadRecordingsButton)
 
-            Plotly.plot("Plot" + pinID, { y: [new Array()], type: 'line' }, layout)
+            Plotly.plot("Plot" + pinID, [{ y: [new Array()], type: 'line' }], layout)
 
         }
 

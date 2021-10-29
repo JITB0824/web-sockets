@@ -36,7 +36,7 @@ wss.on("request", request => {
     var client = request.accept()
     connection.push(client)
     console.log("Connection request accepted")
-    connection[connection.indexOf(client)].send(JSON.stringify({ "title": "Connected" }))
+    connection[connection.indexOf(client)].send(JSON.stringify({ "title": "Connected", "database": database }))
     console.log("adding new client, now have this many clients: " + connection.length)
 
     //Respond to data request with latest chart data
@@ -132,6 +132,7 @@ function openPin(gpioPin) {
         recordingCounter = 0
         console.log("Opening GPIO pin:" + gpioPin)
         rpio.open(gpioPin, rpio.INPUT)
+        database.push(new Array())
     }
     alreadyOpen = false
 
