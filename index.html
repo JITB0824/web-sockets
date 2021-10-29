@@ -196,13 +196,13 @@
             }
 
             for (var i = 0; i < openPinData.length; i++) {
-                Plotly.extendTraces("Plot" + openPins[i],{ y: [openPinData[i][2]] }, [0])
+                Plotly.redraw("Plot" + openPins[i], { y: [openPinData[i][2]] }, [0])
                 if (openPinData[i][6] > 3000) {
-                   Plotly.relayout("Plot" + openPins[i], {
-                      xaxis: {
-                         range: [openPinData[i][6] - 3000, openPinData[i][6]]
-                      }
-                   })
+                    Plotly.relayout("Plot" + openPins[i], {
+                        xaxis: {
+                            range: [openPinData[i][6] - 3000, openPinData[i][6]]
+                        }
+                    })
                 }
             }
         }
@@ -239,10 +239,10 @@
             plot.id = "Plot" + pinID
 
 
-var data = [{
-  y: [0, 0],
-  type: 'scatter'
-}];
+            var data = [{
+                y: [0, 0],
+                type: 'scatter'
+            }];
 
             //Create download buttons
             let downloadPassiveButton = document.createElement("button")
@@ -263,7 +263,7 @@ var data = [{
             document.body.appendChild(downloadPassiveButton)
             document.body.appendChild(downloadRecordingsButton)
 
-            Plotly.plot("Plot" + pinID, data , layout)
+            Plotly.plot("Plot" + pinID, data, layout)
 
         }
 

@@ -108,8 +108,10 @@ function updateData(connection) {
     }
     connection.send(JSON.stringify(chartData))
     for (var i = 0; i < openPinData.length; i++) {
-        openPinData[i][2] = new Array()
-        openPinData[i][3] = new Array()
+        if (openPinData[i][3].length > 3000) {
+            openPinData[i][2].splice(0, openPinData[i][2].length - 3000)
+            openPinData[i][3].splice(0, openPinData[i][3].length - 3000)
+        }
     }
 }
 
