@@ -133,7 +133,7 @@
         //
         //
 
-        setInterval(requestUpdateData, 10)
+        setInterval(requestUpdateData, 100)
         function updateData(openPinData) {
             openPins = new Array()
             for (var i = 0; i < openPinData.length; i++) {
@@ -199,17 +199,11 @@
 
                 if (openPinData[i][6] > 3000) {
 
-                    let dataArray = new Array(openPinData[i][6])
-                    for (let n = 0; n < openPinData[i][6]; n++) {
-                        if (n < openPinData[i][6] - 3000) {
-                            dataArray[n] = 0
-                        } else {
-                            dataArray[n] = openPinData[i][2][n - 3000]
-                        }
-
+                    let xAxis = new Array(3000)
+                    for (let n = 0; n < xAxis.length; n++) {
+                        xAxis[n] = openPinData[i][6] - 3000 + n
                     }
-                    console.log([dataArray])
-                    Plotly.restyle("Plot" + openPins[i], { y: [dataArray] }, [0])
+                    Plotly.restyle("Plot" + openPins[i], { x: [xAxis], y: [openPinData[i][2]] }, [0])
                     Plotly.relayout("Plot" + openPins[i], {
                         xaxis: {
                             range: [openPinData[i][6] - 3000, openPinData[i][6]]
