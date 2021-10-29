@@ -134,7 +134,7 @@
         //
         var refreshRate = 100;
 
-        setInterval(requestUpdateData, refreshRate)
+        var keepRefreshing = setInterval(requestUpdateData, refreshRate)
         function updateData(openPinData) {
             openPins = new Array()
             for (var i = 0; i < openPinData.length; i++) {
@@ -362,6 +362,7 @@
 
         function updateRefreshRate() {
             console.log("Updating refresh rate!")
+            clearInterval(keepRefreshing)
             setInterval(requestUpdateData, document.getElementById('updateRefreshRate').value)
         }
 

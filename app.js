@@ -215,7 +215,7 @@ var start = Date.now()
 var pollingRate = 1
 
 
-setInterval(getSensorData, pollingRate)
+var keepUpdatingData = setInterval(getSensorData, pollingRate)
 function getSensorData() {
     //console.log("running for " + openPinData.length)
     for (var i = 0; i < openPinData.length; i++) {
@@ -369,5 +369,6 @@ String.prototype.replaceAt = function (index, replacement) {
 
 function updatePollingRate(pollingRateInput) {
     console.log("Changing the polling rate!")
+    clearInterval(keepUpdatingData)
     setInterval(getSensorData, pollingRateInput)
 }
