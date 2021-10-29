@@ -29,6 +29,13 @@
         padding: 10px 10px;
         font-size: 15px;
     }
+
+    input.right3 {
+        float: right;
+        background-color: orange;
+        padding: 6px 6px;
+        font-size: 10px;
+    }
 </style>
 
 <body>
@@ -396,12 +403,23 @@
             buttonRecording.onclick = function () { startRecordingAll() }
         }
 
+        function deleteOldRecordings() {
+            console.log("Asking server to delete corrupte recordings!")
+            var message = JSON.stringify({
+                "title": "delete-recordings"
+            })
+            ws.send(message)
+        }
+
 
     </script>
 
     <h2>GPIO Pin Management</h2>
     <input type="button" id="site-status" value="Connecting..." class="right"><br><br><br><br>
     <input type="button" id="reconnect-button" value="Reconnect" class="right2">
+    <input type="button" id="delete-old-recordings-button" value="Delete corrupted recordings" class="right3"
+        onclick="deleteOldRecordings()">
+
     <h3>Open Pins</h3>
     <input type="text" id="openPins"><br><br>
 

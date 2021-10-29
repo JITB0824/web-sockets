@@ -5,6 +5,7 @@ const http = require('http')
 var fs = require('fs')
 var XLSX = require('xlsx')
 var rpio = require('rpio')
+var path = require('path')
 
 const httpserver = http.createServer((req, res) => {
     console.log('We recieved a request for an html server?')
@@ -78,6 +79,9 @@ wss.on("request", request => {
         }
         if (jsonparse.title == "stop-record-all") {
             stopRecordingAll()
+        }
+        if (jsonparse.title == "delete-recordings") {
+            deleteRecordings()
         }
     })
     connection[connection.indexOf(client)].on("close", function () {
@@ -395,3 +399,30 @@ function stopRecordingAll() {
         data = data.replaceAt(data.length - 1, "]")
     }
 }
+
+function deleteRecordings() {
+    console.log("Deleting all recording files!")
+    fromDir("/home/ubuntu/web-sockets", ".txt")
+}
+
+function fromDir(startPath, filter) {
+
+    //console.log('Starting from dir '+startPath+'/');
+
+    if (!fs.existsSync(startPath)) {
+        console.log("no dir ", startPath);
+        return;
+    }
+
+    var files = fs.readdirSync(startPath);
+    for (var i = 0; i < files.length; i++) {
+        var filename = path.join(startPath, files[i]);
+        var stat = fs.lstatSync(filename);
+        if (stat.isDirectory()) {
+            fromDir(filename, filter); //recurse
+        }
+        else if (filename.indexOf(filter) >= 0) {
+            console.log('-- found: ', filename);
+        };
+    };
+};
