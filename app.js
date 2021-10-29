@@ -410,7 +410,7 @@ function fromDir(startPath, filter) {
     //console.log('Starting from dir '+startPath+'/');
 
     if (!fs.existsSync(startPath)) {
-        console.log("no dir ", startPath);
+        console.log("no dir ", startPath)
         return;
     }
 
@@ -419,7 +419,7 @@ function fromDir(startPath, filter) {
         var filename = path.join(startPath, files[i]);
         var stat = fs.lstatSync(filename);
         if (filename.indexOf(filter) >= 0) {
-            console.log('-- found: ', filename);
+            fs.unlinkSync(filename)
         };
     };
 };
