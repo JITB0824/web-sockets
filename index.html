@@ -201,7 +201,7 @@
             }
 
             for (var i = 0; i < openPinData.length; i++) {
-                Plotly.extendTraces("Plot" + openPins[i], { y: [latestMissingPoints] }, [0], 3000)
+                Plotly.extendTraces("Plot" + openPins[i], { y: openPinData[i][2] }, [0], 3000)
                 yArray[i].push(latestMissingPoints[j])
             }
 
