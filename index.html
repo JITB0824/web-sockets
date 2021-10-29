@@ -360,7 +360,7 @@
         }
 
         function updateRefreshRate() {
-            refreshRate = document.getElementById('updateRefreshRate').value
+            setInterval(requestUpdateData, document.getElementById('updateRefreshRate').value)
         }
 
 
