@@ -380,6 +380,7 @@
             buttonRecording = document.getElementById("startRecordingAll")
             buttonRecording.style.background = "red"
             buttonRecording.innerHTML = ("Stop recording all")
+            buttonRecording.onclick = function () { stopRecordingAll() }
         }
 
         function stopRecordingAll() {
@@ -392,6 +393,7 @@
             buttonRecording = document.getElementById("startRecordingAll")
             buttonRecording.style.background = "green"
             buttonRecording.innerHTML = ("Start recording all")
+            buttonRecording.onclick = function () { startRecordingAll() }
         }
 
 
