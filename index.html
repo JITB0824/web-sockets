@@ -199,8 +199,8 @@
 
                 if (openPinData[i][6] > 3000) {
                     let zeroArray = new Array(openPinData[i][6] - 3000); for (let n = 0; n < openPinData[i][6] - 3000; ++n) zeroArray[n] = 0;
-                    console.log([zeroArray, openPinData[i][2]])
-                    Plotly.restyle("Plot" + openPins[i], { y: [zeroArray, openPinData[i][2]] }, [0])
+                    console.log([zeroArray + openPinData[i][2]])
+                    Plotly.restyle("Plot" + openPins[i], { y: [zeroArray + openPinData[i][2]] }, [0])
                     Plotly.relayout("Plot" + openPins[i], {
                         xaxis: {
                             range: [openPinData[i][6] - 3000, openPinData[i][6]]
