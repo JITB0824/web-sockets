@@ -352,10 +352,12 @@
         }
 
         function updatePollingRate() {
+            var pollingRate = document.getElementById('updatePollingRate').value
             message = JSON.stringify({
                 "title": "polling-rate",
-                "pollingRate": document.getElementById('updatePollingRate').value
+                "pollingRate": pollingRate
             })
+            document.getElementById('updatePollingRate').value = pollingRate
             console.log("Requesting a new polling rate!")
             ws.send(message)
         }
@@ -363,7 +365,9 @@
         function updateRefreshRate() {
             console.log("Updating refresh rate!")
             clearInterval(keepRefreshing)
-            setInterval(requestUpdateData, document.getElementById('updateRefreshRate').value)
+            var refreshRate = document.getElementById('updateRefreshRate').value
+            setInterval(requestUpdateData, refreshRate)
+            document.getElementById('updateRefreshRate').value = refreshRate
         }
 
 
@@ -391,6 +395,8 @@
         <input type="button" value="Close all pins" onclick="gpioCloseAll()" style="background-color: orange">
     </form><br><br>
 
+    <h2>Incoming GPIO Data</h2>
+
     <label for="updatePollingRate">Update Sensor Polling Rate:</label><br>
     <input type="text" id="updatePollingRate" name="updatePollingRate">
     <input type="button" value="Update Polling Rate" onclick="updatePollingRate()"><br><br>
@@ -398,9 +404,6 @@
     <label for="updateRefreshRate">Update Refresh Rate:</label><br>
     <input type="text" id="updateRefreshRate" name="updateRefreshRate">
     <input type="button" value="Update Refresh Rate" onclick="updateRefreshRate()"><br><br>
-
-    <h2>Incoming GPIO Data</h2>
-
 
 </body>
 
