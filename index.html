@@ -202,9 +202,9 @@
                     let dataArray = new Array(openPinData[i][6])
                     for (let n = 0; n < openPinData[i][6]; n++) {
                         if (n < openPinData[i][6] - 3000) {
-                            dataArray[i] = 0
+                            dataArray[n] = 0
                         } else {
-                            dataArray[i] = openPinData[i][2]
+                            dataArray[n] = openPinData[i][2][n - 3000]
                         }
 
                     }
