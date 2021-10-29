@@ -224,12 +224,13 @@ function getSensorData() {
         //Here we push a random variable, in future will use gpio pin data here. 
         openPinData[i][2].push(randomVariable)
         openPinData[i][3].push(deltaTime)
-
-        openPinData[i][2].splice(0, 1)
-        openPinData[i][3].splice(0, 1)
+        if (openPinData[i][2].length > 3000) {
+            openPinData[i][2].splice(0, 1)
+            openPinData[i][3].splice(0, 1)
+        }
 
         database[i].push(pinTimeData)
-        console.log(database)
+        console.log(openPinData)
         //Here we save openPinData to state manager
         //fs.writeFileSync(stateFilePath, JSON.stringify(openPinData))
 
