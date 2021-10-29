@@ -73,6 +73,12 @@ wss.on("request", request => {
         if (jsonparse.title == "polling-rate") {
             updatePollingRate(jsonparse.pollingRate)
         }
+        if (jsonparse.title == "record-all") {
+            startRecordingAll()
+        }
+        if (jsonparse.title == "stop-record-all") {
+            stopRecordingAll()
+        }
     })
     connection[connection.indexOf(client)].on("close", function () {
         connection.splice(connection.indexOf(client), 1)
@@ -371,4 +377,21 @@ function updatePollingRate(pollingRateInput) {
     console.log("Changing the polling rate!")
     clearInterval(keepUpdatingData)
     setInterval(getSensorData, pollingRateInput)
+}
+
+function startRecordingAll() {
+    for (var i = 0; i < openPinData.length; i++) {
+        openPinData[i][1] = true
+        firstRecordingLoop[i] = true
+    }
+}
+
+function stopRecordingAll() {
+    for (var i = 0; i < openPinData.length; i++) {
+        openPinData[i][1] = false
+        var filepath = __dirname + "/PIN" + JSON.stringify(openPinData[i][0]) + "RECORDING" + openPinData[i][4] + ".txt"
+        var fs = require('fs')
+        var data = fs.readFileSync(filepath, 'utf8')
+        data = data.replaceAt(data.length - 1, "]")
+    }
 }

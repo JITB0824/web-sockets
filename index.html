@@ -370,6 +370,30 @@
             document.getElementById('updateRefreshRate').value = refreshRate
         }
 
+        function startRecordingAll() {
+            console.log("Recording all")
+            var startRecordingAll = JSON.stringify({
+                "title": "record-all"
+            })
+            ws.send(startRecordingAll)
+
+            buttonRecording = document.getElementById("startRecordingAll")
+            buttonRecording.style.background = "red"
+            buttonRecording.innerHTML = ("Stop recording all")
+        }
+
+        function stopRecordingAll() {
+            console.log("Stopping recording all")
+            var stopRecordingAll = JSON.stringify({
+                "title": "stop-record-all"
+            })
+            ws.send(stopRecordingAll)
+
+            buttonRecording = document.getElementById("startRecordingAll")
+            buttonRecording.style.background = "green"
+            buttonRecording.innerHTML = ("Start recording all")
+        }
+
 
     </script>
 
@@ -398,13 +422,15 @@
     <h2>Incoming GPIO Data</h2>
 
     <label for="updatePollingRate">Update Sensor Polling Rate:</label><br>
-    <input type="text" id="updatePollingRate" name="updatePollingRate">
+    <input type="text" id="updatePollingRate" name="updatePollingRate" value="1">
     <input type="button" value="Update Polling Rate" onclick="updatePollingRate()"><br><br>
 
     <label for="updateRefreshRate">Update Refresh Rate:</label><br>
-    <input type="text" id="updateRefreshRate" name="updateRefreshRate">
+    <input type="text" id="updateRefreshRate" name="updateRefreshRate" value="1">
     <input type="button" value="Update Refresh Rate" onclick="updateRefreshRate()"><br><br>
 
+    <input type="button" id="startRecordingAll" value="Start recording all" onclick="startRecordingAll()"
+        style="background-color: green"><br><br><br>
 </body>
 
 </html>
