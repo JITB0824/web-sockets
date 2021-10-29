@@ -368,5 +368,6 @@ String.prototype.replaceAt = function (index, replacement) {
 }
 
 function updatePollingRate(pollingRateInput) {
+    console.log("Changing the polling rate!")
     setInterval(getSensorData, pollingRateInput)
 }

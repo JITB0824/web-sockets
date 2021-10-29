@@ -356,10 +356,12 @@
                 "title": "polling-rate",
                 "pollingRate": document.getElementById('updatePollingRate').value
             })
+            console.log("Requesting a new polling rate!")
             ws.send(message)
         }
 
         function updateRefreshRate() {
+            console.log("Updating refresh rate!")
             setInterval(requestUpdateData, document.getElementById('updateRefreshRate').value)
         }
 
