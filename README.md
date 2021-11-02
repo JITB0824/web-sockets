@@ -18,14 +18,17 @@ Select the SD card, and select write to start the imaging.
 It will run and create the iamge of ubuntu, and verify its installation. Move the SD card to the Raspberry Pi, and connect an HDMI cable, keyboard, and power the Pi over micro USB. 
 
 
+Configure Static IP:
 
-ssh:
 
 
 HostAPD:
 
 
 dnsmasq:
+
+
+ssh:
 
 
 Nginx:
