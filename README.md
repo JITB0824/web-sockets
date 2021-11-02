@@ -15,4 +15,19 @@ Download the Raspberry Pi imager software from https://www.raspberrypi.com/softw
 Run the imager on the SD card, selecting "other general purpose OS", "Ubuntu", and "Ubuntu server".
 Select the SD card, and select write to start the imaging. 
 
-It will run and create the iamge of ubuntu, and verify its installation. Move the SD card to the Raspberry Pi, and connect an HDMI cable, keyboard, and power over micro USB. 
+It will run and create the iamge of ubuntu, and verify its installation. Move the SD card to the Raspberry Pi, and connect an HDMI cable, keyboard, and power the Pi over micro USB. 
+
+
+ssh:
+
+
+HostAPD:
+
+
+dnsmasq:
+
+
+Nginx:
+
+
+Node JS:
