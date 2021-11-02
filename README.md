@@ -5,8 +5,8 @@ This datalogger is based on a Raspberry Pi, running on Ubuntu Server. It runs an
 
 The following will explain how each library and server is set up, as well as the Raspberry Pi setup. 
 
-SETUP:
-Raspberry Pi:
+SETUP: \n
+Raspberry Pi: \n
 You will need to use an SD card at least 16GB in volume. 
 
 Download the Raspberry Pi imager software from https://www.raspberrypi.com/software/.
