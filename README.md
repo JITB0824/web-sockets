@@ -24,6 +24,8 @@ Configure Static IP:
 
 HostAPD:
 
+edit /etc/dhclient.conf or something like that to lower the timeout to only 10. 
+
 
 dnsmasq:
 
