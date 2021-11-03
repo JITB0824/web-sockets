@@ -8,7 +8,7 @@
     <title>Web Socket Server</title>
 </head>
 
-<script type="text/javascript" src="dist/xlsx.full.min.js"></script>
+<script type="text/javascript" src="xlsx.full.min.js"></script>
 <script src="dist/jquery.js"></script>
 <script lang="javascript" src="dist/FileSaver.js"></script>
 <script src="plotly-2.4.2.min.js"></script>
@@ -279,7 +279,7 @@
             document.body.appendChild(downloadPassiveButton)
             document.body.appendChild(downloadRecordingsButton)
 
-            Plotly.plot("Plot" + pinID, data, layout)
+            Plotly.newPlot("Plot" + pinID, data, layout)
 
         }
 
