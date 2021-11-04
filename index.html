@@ -10,6 +10,7 @@
 
 <script src="xlsx.full.min.js"></script>
 <script src="plotly-2.4.2.min.js"></script>
+<script src="FileSaver.js"></script>
 
 <style>
     input.right {
@@ -354,17 +355,6 @@
             return buf;
         }
 
-        function updatePollingRate() {
-            var pollingRate = document.getElementById('updatePollingRate').value
-            message = JSON.stringify({
-                "title": "polling-rate",
-                "pollingRate": pollingRate
-            })
-            document.getElementById('updatePollingRate').value = pollingRate
-            console.log("Requesting a new polling rate!")
-            ws.send(message)
-        }
-
         function updateRefreshRate() {
             console.log("Updating refresh rate!")
             clearInterval(keepRefreshing)
@@ -437,11 +427,7 @@
 
     <h2>Incoming GPIO Data</h2>
 
-    <label for="updatePollingRate">Update Sensor Polling Rate:</label><br>
-    <input type="text" id="updatePollingRate" name="updatePollingRate" value="1">
-    <input type="button" value="Update Polling Rate" onclick="updatePollingRate()"><br><br>
-
-    <label for="updateRefreshRate">Update Refresh Rate:</label><br>
+    <label for="updateRefreshRate">Update Refresh Rate: [milliseconds]</label><br>
     <input type="text" id="updateRefreshRate" name="updateRefreshRate" value="1">
     <input type="button" value="Update Refresh Rate" onclick="updateRefreshRate()"><br><br>
 

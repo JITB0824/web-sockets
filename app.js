@@ -71,9 +71,6 @@ wss.on("request", request => {
         if (jsonparse.title == "download-recordings") {
             downloadRecordings(connection[connection.indexOf(client)], jsonparse.gpioPin)
         }
-        if (jsonparse.title == "polling-rate") {
-            updatePollingRate(jsonparse.pollingRate)
-        }
         if (jsonparse.title == "record-all") {
             startRecordingAll()
         }
@@ -137,11 +134,12 @@ function openPin(gpioPin) {
         var data = new Array()
         var timestamps = new Array()
         var graphWidth = 0
-        openPinData.push([JSON.parse(gpioPin), false, data, timestamps, recordingCounter, [[], []], graphWidth])
+        openPinData.push([JSON.parse(gpioPin), false, data, timestamps, recordingCounter, [[], []], graphWidth, lastTimestamp, unusedData, unusedTimestamps])
         recordingCounter = 0
         console.log("Opening GPIO pin:" + gpioPin)
         rpio.open(gpioPin, rpio.INPUT)
         database.push(new Array())
+        getSensorData()
     }
     alreadyOpen = false
 
@@ -225,29 +223,39 @@ var start = Date.now()
 var pollingRate = 1
 
 
-var keepUpdatingData = setInterval(getSensorData, pollingRate)
+
 function getSensorData() {
-    //console.log("running for " + openPinData.length)
     for (var i = 0; i < openPinData.length; i++) {
-        //Set a consistent random variable
-        var deltaTime = Date.now() - start
+        var deltaTime = Date.now() - openPinData[i][7]
         var randomVariable = rpio.read(openPinData[i][0])
         var pinTimeData = [deltaTime, randomVariable]
-        start = Date.now()
-        openPinData[i][6]++
+        openPinData[i][7] = Date.now()
 
-        //Here we push a random variable, in future will use gpio pin data here. 
-        openPinData[i][2].push(randomVariable)
-        openPinData[i][3].push(deltaTime)
-        if (openPinData[i][2].length > 3000) {
-            openPinData[i][2].splice(0, 1)
-            openPinData[i][3].splice(0, 1)
+        openPinData[i][8].push(randomVariable)
+        openPinData[i][9].push(deltaTime)
+    }
+    getSensorData()
+}
+
+
+
+setInterval(evaluateSensorData, 10)
+function evaluateSensorData() {
+    //console.log("running for " + openPinData.length)
+    for (var i = 0; i < openPinData.length; i++) {
+
+
+        for (var k = 0; k < openPinData[i][8].length; k++) {
+            openPinData[i][2].push(openPinData[i][8])
+            openPinData[i][3].push(openPinData[i][9])
+            if (openPinData[i][2].length > 3000) {
+                openPinData[i][2].splice(0, 1)
+                openPinData[i][3].splice(0, 1)
+            }
+            database[i].push([openPinData[i][9], openPinData[i][8]])
         }
-
-        database[i].push(pinTimeData)
-        console.log(openPinData)
-        //Here we save openPinData to state manager
-        //fs.writeFileSync(stateFilePath, JSON.stringify(openPinData))
+        openPinData[i][8] = new Array()
+        openPinData[i][9] = new Array()
 
 
         //Here we check if recording, if we are we throw data point into recording file. 
@@ -377,11 +385,6 @@ String.prototype.replaceAt = function (index, replacement) {
     return this.substr(0, index) + replacement + this.substr(index + replacement.length);
 }
 
-function updatePollingRate(pollingRateInput) {
-    console.log("Changing the polling rate!")
-    clearInterval(keepUpdatingData)
-    setInterval(getSensorData, pollingRateInput)
-}
 
 function startRecordingAll() {
     for (var i = 0; i < openPinData.length; i++) {
