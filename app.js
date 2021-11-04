@@ -134,7 +134,7 @@ function openPin(gpioPin) {
         var data = new Array()
         var timestamps = new Array()
         var graphWidth = 0
-        openPinData.push([JSON.parse(gpioPin), false, data, timestamps, recordingCounter, [[], []], graphWidth, lastTimestamp, unusedData, unusedTimestamps])
+        openPinData.push([JSON.parse(gpioPin), false, data, timestamps, recordingCounter, [[], []], graphWidth, new Array(), new Array(), new Array()])
         recordingCounter = 0
         console.log("Opening GPIO pin:" + gpioPin)
         rpio.open(gpioPin, rpio.INPUT)
@@ -223,6 +223,7 @@ var start = Date.now()
 var pollingRate = 1
 
 
+setInterval(getSensorData, 0)
 
 function getSensorData() {
     for (var i = 0; i < openPinData.length; i++) {
@@ -230,30 +231,33 @@ function getSensorData() {
         var randomVariable = rpio.read(openPinData[i][0])
         var pinTimeData = [deltaTime, randomVariable]
         openPinData[i][7] = Date.now()
+        console.log(openPinData[i][8].length)
 
         openPinData[i][8].push(randomVariable)
         openPinData[i][9].push(deltaTime)
     }
-    getSensorData()
 }
 
 
 
-setInterval(evaluateSensorData, 10)
+setInterval(evaluateSensorData, 1)
 function evaluateSensorData() {
+    console.log("Running evaluate!")
     //console.log("running for " + openPinData.length)
     for (var i = 0; i < openPinData.length; i++) {
 
 
         for (var k = 0; k < openPinData[i][8].length; k++) {
-            openPinData[i][2].push(openPinData[i][8])
-            openPinData[i][3].push(openPinData[i][9])
+            openPinData[i][2].push(openPinData[i][8][k])
+            openPinData[i][3].push(openPinData[i][9][k])
             if (openPinData[i][2].length > 3000) {
                 openPinData[i][2].splice(0, 1)
                 openPinData[i][3].splice(0, 1)
             }
-            database[i].push([openPinData[i][9], openPinData[i][8]])
+            var pinTimeData = [openPinData[i][9], openPinData[i][8]]
+            database[i].push(pinTimeData)
         }
+        console.log(openPinData)
         openPinData[i][8] = new Array()
         openPinData[i][9] = new Array()
 
