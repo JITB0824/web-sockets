@@ -229,9 +229,9 @@ function getSensorData() {
     for (var i = 0; i < openPinData.length; i++) {
         var deltaTime = Date.now() - openPinData[i][7]
         var randomVariable = rpio.read(openPinData[i][0])
-        var pinTimeData = [deltaTime, randomVariable]
+
         openPinData[i][7] = Date.now()
-        console.log(openPinData[i][8].length)
+
 
         openPinData[i][8].push(randomVariable)
         openPinData[i][9].push(deltaTime)
@@ -254,48 +254,52 @@ function evaluateSensorData() {
                 openPinData[i][2].splice(0, 1)
                 openPinData[i][3].splice(0, 1)
             }
+            openPinData[i][6]++
             var pinTimeData = [openPinData[i][9], openPinData[i][8]]
             database[i].push(pinTimeData)
+
+            //Here we check if recording, if we are we throw data point into recording file. 
+            if (openPinData[i][1] == true) {
+                if (firstRecordingLoop[i]) {
+                    var fs = require('fs')
+                    console.log("first recordiung loop creating new streams")
+
+                    openPinData[i][4]++
+
+                    var writeStreamName = "PIN" + JSON.stringify(openPinData[i][0]) + "RECORDING" + openPinData[i][4] + ".txt"
+
+                    var fileManagerWriteStream = fs.createWriteStream('fileManager.txt', {
+                        flags: 'a'
+                    })
+                    fileManagerWriteStream.write(writeStreamName + ",")
+                    fileManagerWriteStream.close()
+
+
+                    //Here is the code that initializes the write streams
+                    var writeStreamName = "PIN" + JSON.stringify(openPinData[i][0]) + "RECORDING" + openPinData[i][4] + ".txt"
+
+                    var writeStream = fs.createWriteStream(writeStreamName, {
+                        flags: 'a'
+                    })
+                    var pinTimeData = [deltaTime, randomVariable]
+                    openPinData[i][5].push([[], []])
+                    openPinData[i][5][openPinData[i][4] - 1][0] = writeStreamName
+                    openPinData[i][5][openPinData[i][4] - 1][1] = writeStream
+                    writeStream.write("[" + JSON.stringify(pinTimeData) + ",")
+
+                    firstRecordingLoop[i] = false
+                } else {
+                    var pinTimeData = [deltaTime, randomVariable]
+                    writeStream = openPinData[i][5][openPinData[i][4] - 1][1]
+                    writeStream.write(JSON.stringify(pinTimeData) + ",")
+                }
+            }
         }
         console.log(openPinData)
         openPinData[i][8] = new Array()
         openPinData[i][9] = new Array()
 
 
-        //Here we check if recording, if we are we throw data point into recording file. 
-        if (openPinData[i][1] == true) {
-            if (firstRecordingLoop[i]) {
-                var fs = require('fs')
-                console.log("first recordiung loop creating new streams")
-
-                openPinData[i][4]++
-
-                var writeStreamName = "PIN" + JSON.stringify(openPinData[i][0]) + "RECORDING" + openPinData[i][4] + ".txt"
-
-                var fileManagerWriteStream = fs.createWriteStream('fileManager.txt', {
-                    flags: 'a'
-                })
-                fileManagerWriteStream.write(writeStreamName + ",")
-                fileManagerWriteStream.close()
-
-
-                //Here is the code that initializes the write streams
-                var writeStreamName = "PIN" + JSON.stringify(openPinData[i][0]) + "RECORDING" + openPinData[i][4] + ".txt"
-
-                var writeStream = fs.createWriteStream(writeStreamName, {
-                    flags: 'a'
-                })
-                openPinData[i][5].push([[], []])
-                openPinData[i][5][openPinData[i][4] - 1][0] = writeStreamName
-                openPinData[i][5][openPinData[i][4] - 1][1] = writeStream
-                writeStream.write("[" + JSON.stringify(pinTimeData) + ",")
-                console.log(openPinData)
-                firstRecordingLoop[i] = false
-            } else {
-                writeStream = openPinData[i][5][openPinData[i][4] - 1][1]
-                writeStream.write(JSON.stringify(pinTimeData) + ",")
-            }
-        }
     }
 }
 
