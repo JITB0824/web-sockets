@@ -227,7 +227,7 @@ function openConnectedPins() {
 
 var start = Date.now()
 var pollingRate = 0
-
+var refreshRate = 25
 
 let keepUpdatingData = setInterval(getSensorData, pollingRate)
 
@@ -245,7 +245,7 @@ function getSensorData() {
 
 
 
-setInterval(evaluateSensorData, 25)
+let keepRefreshingData = setInterval(evaluateSensorData, refreshRate)
 function evaluateSensorData() {
     console.log("Running evaluate!")
     //console.log("running for " + openPinData.length)
@@ -444,4 +444,9 @@ function updatePollingRate(pollingRateInput) {
     console.log("Changing the polling rate!")
     clearInterval(keepUpdatingData)
     setInterval(getSensorData, pollingRateInput)
+}
+
+function updateRefreshRate(refreshRateInput) {
+    clearInterval(keepRefreshingData)
+    setInterval(evaluateSensorData, refreshRateInput)
 }
