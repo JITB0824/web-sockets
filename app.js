@@ -80,6 +80,9 @@ wss.on("request", request => {
         if (jsonparse.title == "delete-recordings") {
             deleteRecordings()
         }
+        if (jsonparse.title == "polling-rate") {
+            updatePollingRate(jsonparse.pollingRate)
+        }
     })
     connection[connection.indexOf(client)].on("close", function () {
         connection.splice(connection.indexOf(client), 1)
@@ -220,10 +223,10 @@ function openConnectedPins() {
 }
 
 var start = Date.now()
-var pollingRate = 1
+var pollingRate = 0
 
 
-setInterval(getSensorData, 0)
+let keepUpdatingData = setInterval(getSensorData, pollingRate)
 
 function getSensorData() {
     for (var i = 0; i < openPinData.length; i++) {
@@ -232,7 +235,6 @@ function getSensorData() {
 
         openPinData[i][7] = Date.now()
 
-
         openPinData[i][8].push(randomVariable)
         openPinData[i][9].push(deltaTime)
     }
@@ -240,7 +242,7 @@ function getSensorData() {
 
 
 
-setInterval(evaluateSensorData, 1)
+setInterval(evaluateSensorData, 25)
 function evaluateSensorData() {
     console.log("Running evaluate!")
     //console.log("running for " + openPinData.length)
@@ -281,7 +283,7 @@ function evaluateSensorData() {
                     var writeStream = fs.createWriteStream(writeStreamName, {
                         flags: 'a'
                     })
-                    var pinTimeData = [deltaTime, randomVariable]
+                    var pinTimeData = [openPinData[i][9][k], openPinData[i][8][k]]
                     openPinData[i][5].push([[], []])
                     openPinData[i][5][openPinData[i][4] - 1][0] = writeStreamName
                     openPinData[i][5][openPinData[i][4] - 1][1] = writeStream
@@ -289,7 +291,7 @@ function evaluateSensorData() {
 
                     firstRecordingLoop[i] = false
                 } else {
-                    var pinTimeData = [deltaTime, randomVariable]
+                    var pinTimeData = [openPinData[i][9][k], openPinData[i][8][k]]
                     writeStream = openPinData[i][5][openPinData[i][4] - 1][1]
                     writeStream.write(JSON.stringify(pinTimeData) + ",")
                 }
@@ -434,3 +436,9 @@ function fromDir(startPath, filter) {
         };
     };
 };
+
+function updatePollingRate(pollingRateInput) {
+    console.log("Changing the polling rate!")
+    clearInterval(keepUpdatingData)
+    setInterval(getSensorData, pollingRateInput)
+}
