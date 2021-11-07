@@ -83,6 +83,9 @@ wss.on("request", request => {
         if (jsonparse.title == "polling-rate") {
             updatePollingRate(jsonparse.pollingRate)
         }
+        if (jsonparse.title == "refresh-rate") {
+            updateRefreshRate(jsonparse.refreshRate)
+        }
     })
     connection[connection.indexOf(client)].on("close", function () {
         connection.splice(connection.indexOf(client), 1)

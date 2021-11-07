@@ -361,6 +361,23 @@
             var refreshRate = document.getElementById('updateRefreshRate').value
             setInterval(requestUpdateData, refreshRate)
             document.getElementById('updateRefreshRate').value = refreshRate
+
+            message = JSON.stringify({
+                "title": "refresh-rate",
+                "refreshRate": refreshRate
+            })
+            ws.send(message)
+        }
+
+        function updatePollingRate() {
+            var pollingRate = document.getElementById('updatePollingRate').value
+            message = JSON.stringify({
+                "title": "polling-rate",
+                "pollingRate": pollingRate
+            })
+            document.getElementById('updatePollingRate').value = pollingRate
+            console.log("Requesting a new polling rate!")
+            ws.send(message)
         }
 
         function startRecordingAll() {
@@ -426,6 +443,10 @@
     </form><br><br>
 
     <h2>Incoming GPIO Data</h2>
+
+    <label for="updateRefreshRate">Update Sensor Polling Rate: [milliseconds]</label><br>
+    <input type="text" id="updatePollingRate" name="updatePollingRate" value="1">
+    <input type="button" value="Update Polling Rate" onclick="updatePollingRate()"><br><br>
 
     <label for="updateRefreshRate">Update Refresh Rate: [milliseconds]</label><br>
     <input type="text" id="updateRefreshRate" name="updateRefreshRate" value="1">
