@@ -6,6 +6,7 @@ var fs = require('fs')
 var XLSX = require('xlsx')
 var rpio = require('rpio')
 var path = require('path')
+//var { worker } = require('worker_threads')
 
 const httpserver = http.createServer((req, res) => {
     console.log('We recieved a request for an html server?')
@@ -227,7 +228,7 @@ function openConnectedPins() {
 
 var start = Date.now()
 var pollingRate = 0
-var refreshRate = 25
+var refreshRate = 1
 
 let keepUpdatingData = setInterval(getSensorData, pollingRate)
 
@@ -381,7 +382,7 @@ function download(client, filename, data, passive) {
             workbook.Sheets["Recording " + (i + 1)] = worksheet
         }
     }
-
+    console.log(workbook)
     var workbookOutput = XLSX.write(workbook, { bookType: 'xlsx', type: 'binary' })
 
     var message = JSON.stringify({
@@ -443,10 +444,10 @@ function fromDir(startPath, filter) {
 function updatePollingRate(pollingRateInput) {
     console.log("Changing the polling rate!")
     clearInterval(keepUpdatingData)
-    setInterval(getSensorData, pollingRateInput)
+    keepUpdatingData = setInterval(getSensorData, pollingRateInput)
 }
 
 function updateRefreshRate(refreshRateInput) {
     clearInterval(keepRefreshingData)
-    setInterval(evaluateSensorData, refreshRateInput)
+    keepRefreshingData = setInterval(evaluateSensorData, refreshRateInput)
 }

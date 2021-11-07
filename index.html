@@ -359,7 +359,7 @@
             console.log("Updating refresh rate!")
             clearInterval(keepRefreshing)
             var refreshRate = document.getElementById('updateRefreshRate').value
-            setInterval(requestUpdateData, refreshRate)
+            keepRefreshing = setInterval(requestUpdateData, refreshRate)
             document.getElementById('updateRefreshRate').value = refreshRate
 
             message = JSON.stringify({
@@ -445,7 +445,7 @@
     <h2>Incoming GPIO Data</h2>
 
     <label for="updateRefreshRate">Update Sensor Polling Rate: [milliseconds]</label><br>
-    <input type="text" id="updatePollingRate" name="updatePollingRate" value="1">
+    <input type="text" id="updatePollingRate" name="updatePollingRate" value="0">
     <input type="button" value="Update Polling Rate" onclick="updatePollingRate()"><br><br>
 
     <label for="updateRefreshRate">Update Refresh Rate: [milliseconds]</label><br>
