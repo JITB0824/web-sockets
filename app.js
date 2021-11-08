@@ -142,7 +142,8 @@ function openPin(gpioPin) {
         var timestamps = new Array()
         var graphWidth = 0
         var sensorGPIO = new Gpio(JSON.parse(gpioPin), 'in', 'both')
-        openPinData.push([JSON.parse(gpioPin), false, data, timestamps, recordingCounter, [[], []], graphWidth, new Array(), new Array(), new Array(), sensorGPIO])
+
+        openPinData.push([JSON.parse(gpioPin), false, data, timestamps, recordingCounter, [[], []], graphWidth, new Array(), new Array(), new Array(), sensorGPIO, true])
         recordingCounter = 0
         console.log("Opening GPIO pin:" + gpioPin)
         //rpio.open(gpioPin, rpio.INPUT)
@@ -158,7 +159,18 @@ function openPin(gpioPin) {
 
                 openPinData[i][8].push(randomVariable)
                 openPinData[i][9].push(deltaTime)
+                openPinData[i][11] = false
+            } else {
+                var deltaTime = Date.now() - openPinData[i][7]
+                var randomVariable = 0
+
+                openPinData[i][7] = Date.now()
+
+                openPinData[i][8].push(randomVariable)
+                openPinData[i][9].push(deltaTime)
+                openPinData[i][11] = true
             }
+
         })
 
     }
@@ -250,7 +262,12 @@ let keepUpdatingData = setInterval(getSensorData, pollingRate)
 function getSensorData() {
     for (var i = 0; i < openPinData.length; i++) {
         var deltaTime = Date.now() - openPinData[i][7]
-        var randomVariable = 1
+
+        if (openPinData[i][11] == true) {
+            var randomVariable = 1
+        } else {
+            var randomVariable = 0
+        }
 
         openPinData[i][7] = Date.now()
 
