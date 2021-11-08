@@ -157,14 +157,6 @@ function openPin(gpioPin) {
 
                 openPinData[i][8].push(randomVariable)
                 openPinData[i][9].push(deltaTime)
-            } else if (state == 1) {
-                var deltaTime = Date.now() - openPinData[i][7]
-                var randomVariable = 1
-
-                openPinData[i][7] = Date.now()
-
-                openPinData[i][8].push(randomVariable)
-                openPinData[i][9].push(deltaTime)
             }
         })
 
@@ -257,7 +249,7 @@ let keepUpdatingData = setInterval(getSensorData, pollingRate)
 function getSensorData() {
     for (var i = 0; i < openPinData.length; i++) {
         var deltaTime = Date.now() - openPinData[i][7]
-        var randomVariable = rpio.read(openPinData[i][0])
+        var randomVariable = 1
 
         openPinData[i][7] = Date.now()
 
@@ -265,11 +257,6 @@ function getSensorData() {
         openPinData[i][9].push(deltaTime)
     }
 }
-
-function hardwareInterrupt(i) {
-    openPinData
-}
-
 
 
 let keepRefreshingData = setInterval(evaluateSensorData, refreshRate)
