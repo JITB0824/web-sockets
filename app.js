@@ -4,7 +4,6 @@
 const http = require('http')
 var fs = require('fs')
 var XLSX = require('xlsx')
-var rpio = require('rpio')
 var path = require('path')
 var GPio = require('onoff').Gpio
 
@@ -142,13 +141,14 @@ function openPin(gpioPin) {
         var data = new Array()
         var timestamps = new Array()
         var graphWidth = 0
-        openPinData.push([JSON.parse(gpioPin), false, data, timestamps, recordingCounter, [[], []], graphWidth, new Array(), new Array(), new Array(), new Gpio(JSON.parse(gpioPin), 'in')])
+        openPinData.push([JSON.parse(gpioPin), false, data, timestamps, recordingCounter, [[], []], graphWidth, new Array(), new Array(), new Array(), new Gpio(JSON.parse(gpioPin), 'in', 'both')])
         recordingCounter = 0
         console.log("Opening GPIO pin:" + gpioPin)
         //rpio.open(gpioPin, rpio.INPUT)
         database.push(new Array())
         getSensorData()
         openPinData[i][10].watch(function (err, state) {
+            console.log("registered gpio change!")
             if (state == 0) {
                 var deltaTime = Date.now() - openPinData[i][7]
                 var randomVariable = 0
@@ -261,7 +261,6 @@ function getSensorData() {
 
 let keepRefreshingData = setInterval(evaluateSensorData, refreshRate)
 function evaluateSensorData() {
-    console.log("Running evaluate!")
     //console.log("running for " + openPinData.length)
     for (var i = 0; i < openPinData.length; i++) {
 
@@ -314,7 +313,6 @@ function evaluateSensorData() {
                 }
             }
         }
-        console.log(openPinData)
         openPinData[i][8] = new Array()
         openPinData[i][9] = new Array()
 
