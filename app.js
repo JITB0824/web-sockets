@@ -141,22 +141,14 @@ function openPin(gpioPin) {
         var data = new Array()
         var timestamps = new Array()
         var graphWidth = 0
-<<<<<<< HEAD
         openPinData.push([JSON.parse(gpioPin), false, data, timestamps, recordingCounter, [[], []], graphWidth, new Array(), new Array(), new Array(), new Gpio(gpioPin, 'in', 'both')])
-=======
-        openPinData.push([JSON.parse(gpioPin), false, data, timestamps, recordingCounter, [[], []], graphWidth, new Array(), new Array(), new Array(), new Gpio(JSON.parse(gpioPin), 'in', 'both')])
->>>>>>> 302bd708a78ebfcb8026817d18466422c2cd6f34
         recordingCounter = 0
         console.log("Opening GPIO pin:" + gpioPin)
         //rpio.open(gpioPin, rpio.INPUT)
         database.push(new Array())
         getSensorData()
         openPinData[i][10].watch(function (err, state) {
-<<<<<<< HEAD
             console.log("Registered GPIO Change!")
-=======
-            console.log("registered gpio change!")
->>>>>>> 302bd708a78ebfcb8026817d18466422c2cd6f34
             if (state == 0) {
                 var deltaTime = Date.now() - openPinData[i][7]
                 var randomVariable = 0
