@@ -6,7 +6,7 @@ var fs = require('fs')
 var XLSX = require('xlsx')
 var rpio = require('rpio')
 var path = require('path')
-//var { worker } = require('worker_threads')
+var GPio = require('onoff').Gpio
 
 const httpserver = http.createServer((req, res) => {
     console.log('We recieved a request for an html server?')
@@ -15,6 +15,7 @@ const httpserver = http.createServer((req, res) => {
 //Create websocket server
 const WebSocketServer = require('websocket').server
 const { setgroups } = require('process')
+const { Gpio } = require('onoff')
 const wss = new WebSocketServer({
     "httpServer": httpserver
 })
@@ -141,12 +142,32 @@ function openPin(gpioPin) {
         var data = new Array()
         var timestamps = new Array()
         var graphWidth = 0
-        openPinData.push([JSON.parse(gpioPin), false, data, timestamps, recordingCounter, [[], []], graphWidth, new Array(), new Array(), new Array()])
+        openPinData.push([JSON.parse(gpioPin), false, data, timestamps, recordingCounter, [[], []], graphWidth, new Array(), new Array(), new Array(), new Gpio(JSON.parse(gpioPin), 'in')])
         recordingCounter = 0
         console.log("Opening GPIO pin:" + gpioPin)
-        rpio.open(gpioPin, rpio.INPUT)
+        //rpio.open(gpioPin, rpio.INPUT)
         database.push(new Array())
         getSensorData()
+        openPinData[i][10].watch(function (err, state) {
+            if (state == 0) {
+                var deltaTime = Date.now() - openPinData[i][7]
+                var randomVariable = 0
+
+                openPinData[i][7] = Date.now()
+
+                openPinData[i][8].push(randomVariable)
+                openPinData[i][9].push(deltaTime)
+            } else if (state == 1) {
+                var deltaTime = Date.now() - openPinData[i][7]
+                var randomVariable = 1
+
+                openPinData[i][7] = Date.now()
+
+                openPinData[i][8].push(randomVariable)
+                openPinData[i][9].push(deltaTime)
+            }
+        })
+
     }
     alreadyOpen = false
 
@@ -174,7 +195,8 @@ function closePin(gpioPin) {
 
             //Must be the very last line
             openPinData.splice(i, 1)
-            rpio.close(gpioPin)
+            //rpio.close(gpioPin)
+            openPinData[i][10].unwatch()
         }
     }
     if (wasntOpen) {
@@ -196,7 +218,8 @@ function closeAllPins() {
             openPinData[i][5][j][1].end()
 
         }
-        rpio.close(openPinData[i][0])
+        //rpio.close(openPinData[i][0])
+        openPinData[i][10].unwatch()
     }
     openPinData = new Array()
 }
@@ -226,9 +249,8 @@ function openConnectedPins() {
     //Write script that checks every gpio pin for valid data, and if found, runs add pin for that pin to make sure it is open
 }
 
-var start = Date.now()
-var pollingRate = 0
-var refreshRate = 1
+var pollingRate = 10
+var refreshRate = 50
 
 let keepUpdatingData = setInterval(getSensorData, pollingRate)
 
@@ -242,6 +264,10 @@ function getSensorData() {
         openPinData[i][8].push(randomVariable)
         openPinData[i][9].push(deltaTime)
     }
+}
+
+function hardwareInterrupt(i) {
+    openPinData
 }
 
 
